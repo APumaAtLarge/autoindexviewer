@@ -1,0 +1,27 @@
+/* src/style.css */
+
+body {
+  margin: 0;
+  display: flex;         /* 🌟 重新让 body 成为 flex 容器 */
+  align-items: flex-start;
+  min-width: 320px;
+  min-height: 100vh;     /* 保证至少有整个屏幕的高度 */
+  background-color: #f5f5f5;
+  padding-left: 280px;   /* 给固定定位的 Sidebar 留出空间 */
+  box-sizing: border-box;
+}
+
+/* 播放器主容器撑满剩余空间 */
+#app {
+  flex: 1;               /* 🌟 直接霸占 body 剩下的所有空间 */
+  min-width: 0;          /* 防止子元素溢出 */
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 12px;
+}

@@ -1,0 +1,98 @@
+
+/* src/Sidebar.scss */
+
+/* 用同名类名作为命名空间，防止污染原网页的全局样式 */
+.Sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  background-color: #ffffff;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  font-family: inherit;
+
+  /* 内部的元素全部嵌套在里面 */
+  .header {
+    padding: 20px;
+    border-bottom: 1px solid #e8e8e8;
+    background-color: #fafafa;
+
+    h3 {
+      margin: 0;
+      color: #1a1a1a;
+      font-size: 16px;
+    }
+
+    .subtitle {
+      font-size: 11px;
+      color: #999;
+      display: block;
+      margin-top: 4px;
+    }
+  }
+
+  .status {
+    padding: 20px;
+    color: #999;
+    font-size: 14px;
+    text-align: center;
+
+    &.error {
+      color: #ff4d4f;
+    }
+  }
+
+  .list {
+    list-style: none;
+    padding: 10px 0;
+    margin: 0;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+
+    &:hover {
+      background-color: #f0f4ff;
+    }
+
+    &.active {
+      background-color: #e8edff;
+      border-left-color: #4f66ff;
+
+      .name {
+        color: #4f66ff;
+        font-weight: bold;
+      }
+    }
+
+    &.dir .name {
+      color: #d48806;
+    }
+
+    .icon {
+      margin-right: 10px;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .name {
+      color: #444;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}

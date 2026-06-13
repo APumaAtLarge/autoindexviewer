@@ -1,0 +1,53 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+    // File Layout
+    // "rootDir": "./src",
+    // "outDir": "./dist",
+    // Environment Settings
+    // See also https://aka.ms/tsconfig/module
+    // "module": "nodenext",
+    // 1. 将模块生成和解析模式改为适合 Vite 等打包工具的配置
+    // Add these two lines for SolidJS:
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "esnext",
+    "types": [
+      "vite/client"
+    ],
+    // For nodejs:
+    // "lib": ["esnext"],
+    // "types": ["node"],
+    // and npm install -D @types/node
+    // Other Outputs
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    // Stricter Typechecking Options
+    "noUncheckedIndexedAccess": true,
+    // 2. 允许在 import 时不写后缀（或者写 .ts 后缀，取决于你的习惯）
+    "allowImportingTsExtensions": true,
+    // 3. 配合上一步，告诉 TS：我只用它来做类型检查，不靠 tsc 来输出 js 文件（打包交给 Vite）
+    "noEmit": true,
+    // "exactOptionalPropertyTypes": true,
+    // Style Options
+    // "noImplicitReturns": true,
+    // "noImplicitOverride": true,
+    // "noUnusedLocals": true,
+    // "noUnusedParameters": true,
+    // "noFallthroughCasesInSwitch": true,
+    // "noPropertyAccessFromIndexSignature": true,
+    // Recommended Options
+    // "strict": true,
+    "allowJs": true, // 允许编译 JS 文件
+    "checkJs": false, // 暂时不对 JS 文件进行类型检查
+    "strict": false, // 初期可以先关闭严格模式，等跑通后再设为 true
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true,
+  }
+}
