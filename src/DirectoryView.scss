@@ -16,31 +16,125 @@
     gap: 10px;
   }
 
+  //   .file-grid {
+  //     display: grid;
+  //     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  //     gap: 20px;
+  //     max-width: 980px; /* 160*5 + 20*4 = 980 */
+  //   }
   .file-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 20px;
+
+    /* 默认大屏：五列均匀展开 */
+    grid-template-columns: repeat(5, 1fr);
+
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    @media (max-width: 768px) {
+      gap: 12px;
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (max-width: 480px) {
+      gap: 10px;
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   /* 清理后的部分 SCSS 参考 */
+  //   .file-card {
+  //     display: flex;
+  //     flex-direction: column;
+  //     align-items: center;
+  //     justify-content: center;
+  //     background: #fff;
+  //     border: 1px solid #e0e0e0;
+  //     border-radius: 12px;
+  //     text-decoration: none;
+  //     color: #333;
+  //     transition: all 0.2s ease;
+  //     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  //     overflow: hidden;
+  //     padding: 0;
+
+  //     &:hover {
+  //       transform: translateY(-4px);
+  //       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  //       border-color: #4f66ff;
+  //     }
+
+  //     &.is-dir {
+  //       background: #fafbff;
+  //     }
+
+  //     .cover-wrapper {
+  //       width: 100%;
+  //       aspect-ratio: 16 / 9;
+  //       background-color: #f0f0f0;
+  //       display: flex;
+  //       align-items: center;
+  //       justify-content: center;
+  //       overflow: hidden;
+  //     }
+
+  //     .cover-img {
+  //       width: 100%;
+  //       height: 100%;
+  //       object-fit: cover;
+  //     }
+
+  //     .icon {
+  //       font-size: 40px;
+  //       /* 如果没有图片，让 icon 居中显示好看点 */
+  //       margin-top: 20px;
+  //       margin-bottom: 20px;
+  //     }
+
+  //     .name {
+  //       font-size: 14px;
+  //       text-align: center;
+  //       width: 100%;
+  //       white-space: nowrap;
+  //       overflow: hidden;
+  //       text-overflow: ellipsis;
+  //       color: #555;
+  //       padding: 12px 15px 4px;
+  //       box-sizing: border-box;
+  //     }
+
+  //     .file-meta {
+  //       width: 100%;
+  //       display: flex;
+  //       justify-content: space-between;
+  //       padding: 0 15px 12px;
+  //       font-size: 12px;
+  //       color: #999;
+  //       box-sizing: border-box;
+  //     }
+  //   }
+
   .file-card {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     background: #fff;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #222; /* 外黑边框 */
     border-radius: 12px;
     text-decoration: none;
     color: #333;
     transition: all 0.2s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    overflow: hidden; 
+    overflow: hidden;
     padding: 0;
+    position: relative; /* 供子元素绝对定位 */
 
     &:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
       border-color: #4f66ff;
     }
 
@@ -50,12 +144,13 @@
 
     .cover-wrapper {
       width: 100%;
-      aspect-ratio: 16 / 9; 
-      background-color: #f0f0f0;
+      aspect-ratio: 16 / 9;
+      background-color: #1a1a1a; /* 无图时背景深色，图标白色好看 */
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      position: relative;
     }
 
     .cover-img {
@@ -66,80 +161,94 @@
 
     .icon {
       font-size: 40px;
-      /* 如果没有图片，让 icon 居中显示好看点 */
-      margin-top: 20px;
-      margin-bottom: 20px; 
+      margin: 0; /* cover-wrapper 已经居中，不需要额外 margin */
     }
 
+    /* 文字叠层：绝对定位到底部 */
     .name {
-      font-size: 14px;
-      text-align: center;
-      width: 100%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      font-size: 13px;
+      text-align: left;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      color: #555;
-      padding: 12px 15px 4px;
+      color: #fff; /* 白字 */
+      padding: 20px 10px 8px;
       box-sizing: border-box;
+      /* 底部渐变遮罩，让文字可读 */
+      background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(0, 0, 0, 0.65) 100%
+      );
+      z-index: 1;
     }
 
     .file-meta {
-      width: 100%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
       display: flex;
       justify-content: space-between;
-      padding: 0 15px 12px;
-      font-size: 12px;
-      color: #999;
+      padding: 0 10px 6px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.75);
       box-sizing: border-box;
+      z-index: 1;
     }
+  }
+
+  /* 有 meta 时 name 上移，避免遮住大小/日期 */
+  .file-card:has(.file-meta) .name {
+    padding-bottom: 22px; /* 给 meta 腾出空间 */
   }
 }
 
-
-/* 🌟 移动端适配 */
 @media (max-width: 768px) {
   .DirectoryView {
-    /* 1. 缩小页面整体的外边距 */
     padding: 12px;
 
     .dir-title {
-      /* 2. 缩小标题字号和间距 */
       font-size: 18px;
       margin-bottom: 16px;
       padding-bottom: 8px;
     }
 
     .file-grid {
-      /* 3. 缩小卡片间距，并允许卡片变得更窄（最小 130px），
-         这样即使在较窄的手机上也能保证一行展示两列卡片 */
-      gap: 12px;
+      gap: 10px;
       grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     }
 
     .file-card {
-      /* 4. 调整卡片内部元素的留白和字号 */
-      border-radius: 8px; /* 圆角稍微收敛一点 */
+      border-radius: 8px;
 
       .icon {
-        font-size: 32px;
-        margin-top: 15px;
-        margin-bottom: 15px;
+        font-size: 28px;
       }
 
       .name {
-        font-size: 13px;
-        padding: 8px 10px 2px;
+        font-size: 12px;
+        padding: 16px 8px 6px;
       }
 
       .file-meta {
-        font-size: 11px;
-        padding: 0 10px 10px;
-        /* 在极窄屏幕下，文件大小和日期可能会挤在一排重叠，
-           改成纵向排列或允许换行更安全 */
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
+        font-size: 10px;
+        padding: 0 8px 5px;
       }
     }
   }
+}
+
+.gslide-image img {
+  width: 95vw !important;
+  height: 95vh !important;
+  object-fit: contain !important;
+}
+
+.gslide-description {
+display: none !important;
 }

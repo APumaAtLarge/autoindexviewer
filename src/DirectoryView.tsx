@@ -17,7 +17,14 @@ export function DirectoryView() {
   // 初始化 / 刷新灯箱
   const initLightbox = () => {
     lightbox?.destroy();
-    lightbox = GLightbox({ selector: ".glightbox" });
+    lightbox = GLightbox({
+      selector: ".glightbox",
+      touchNavigation: true,
+      loop: true,
+      zoomable: true,
+      draggable: true,
+      openEffect: "zoom",
+    });
   };
 
   onMount(async () => {
