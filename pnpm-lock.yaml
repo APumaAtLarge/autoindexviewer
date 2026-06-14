@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      glightbox:
+        specifier: ^3.3.1
+        version: 3.3.1
       solid-js:
         specifier: ^1.9.13
         version: 1.9.13
@@ -681,6 +684,9 @@ packages:
   gensync@1.0.0-beta.2:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}
     engines: {node: '>=6.9.0'}
+
+  glightbox@3.3.1:
+    resolution: {integrity: sha512-nXoKfJRnQTDaAFAw5799hjpfAAHx5aLvOLG0SIGudeMCwtHgO3P2/avNYapJ+SL4UEZxO2YNBPtq6pzMhSx42g==}
 
   html-entities@2.3.3:
     resolution: {integrity: sha512-DV5Ln36z34NNTDgnz0EWGBLZENelNAtkiFA4kyNOG2tDI6Mz1uSWiq1wAKdyjnJwyDiDO7Fa2SO1CTxPXL8VxA==}
@@ -1621,6 +1627,8 @@ snapshots:
     optional: true
 
   gensync@1.0.0-beta.2: {}
+
+  glightbox@3.3.1: {}
 
   html-entities@2.3.3: {}
 

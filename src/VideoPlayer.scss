@@ -2,34 +2,53 @@
 .VideoPlayer {
   width: 100%;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 
   .title {
     font-size: 18px;
     font-weight: bold;
     color: #333;
     margin-bottom: 12px;
+    flex-shrink: 0; /* 防止标题被压缩 */
   }
 
   .player-container {
-    width: 80%;
-    /* 
-      核心：用 max-height 限制高度不超过视窗
-      当视窗很宽时，播放器宽度 = 100%，高度由 fluid 模式按 16:9 自动计算
-      但如果计算出的高度 > 视窗高度，则反过来用 max-height 压缩
-    */
-    max-height: calc(100vh - 160px); /* 80px 留给 title 和上下边距 */
-    aspect-ratio: 16 / 9; /* 🌟 给容器本身设定宽高比 */
+    width: 70%;
+
+    /* 🌟 核心：计算时扣除你的顶栏(56px) + 页面外边距 + title高度，确保绝对不会出滚动条 */
+    max-height: calc(100vh - 160px);
+
+    /* 🌟 基础比例 */
+    aspect-ratio: 16 / 9;
+
     background-color: #000;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
-    /* XGPlayer 内部的 video 元素铺满容器 */
-    :global(.xgplayer),
+    /* 为了美观，当宽度不到 100% 时让它居中 */
+    margin: 0 auto;
+
+    /* 🌟 让 XGPlayer 完全服从外部容器的高度，不要自己加内边距 */
+    :global(.xgplayer) {
+      width: 100% !important;
+      height: 100% !important;
+      padding-top: 0 !important; /* 强制干掉潜在的内边距残留 */
+    }
+
     :global(video) {
       width: 100% !important;
       height: 100% !important;
-      object-fit: contain; /* 保证视频内容完整显示，不裁剪 */
+      object-fit: contain;
     }
+  }
+}
+
+/* 🌟 移动端适配：手机屏幕小，就直接 100% 宽度，并解除高度限制 */
+@media (max-width: 768px) {
+  .VideoPlayer .player-container {
+    width: 100%;
+    max-height: none;
   }
 }

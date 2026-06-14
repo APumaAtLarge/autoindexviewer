@@ -23,7 +23,10 @@ export function VideoPlayer() {
     const playerConfig: any = {
       el: containerRef,
       url: url,
-      fluid: true,
+    //  fluid: true,
+    // 🌟 2. 强制播放器内部实例尺寸为 100%，完全听从父级 CSS 的指挥
+    width: "100%",
+    height: "100%",
       videoFillMode: "contain", // 🌟 替代 fitVideoSize，确保视频完整显示
       autoplay: true,
       volume: 0.6,

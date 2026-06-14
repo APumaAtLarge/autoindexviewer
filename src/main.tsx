@@ -32,3 +32,12 @@ function initPlugin() {
 }
 
 initPlugin();
+
+
+
+
+// 在入口文件（如 main.tsx/index.tsx）加这一行
+const meta = document.createElement("meta");
+meta.name = "viewport";
+meta.content = "width=device-width, initial-scale=1.0";
+document.head.appendChild(meta);

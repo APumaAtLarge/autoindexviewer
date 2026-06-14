@@ -1,20 +1,42 @@
 
-/* src/Sidebar.scss */
-
-/* 用同名类名作为命名空间，防止污染原网页的全局样式 */
-.Sidebar {
+/* 移动端遮罩层 */
+.sidebar-mask {
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
-  width: 280px;
+  width: 100vw;
   height: 100vh;
-  background-color: #ffffff;
-  border-right: 1px solid #e0e0e0;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.08);
-  z-index: 1000;
-  font-family: inherit;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999; /* 略低于 Sidebar 的 1000 */
+}
+/* 用同名类名作为命名空间，防止污染原网页的全局样式 */
+.Sidebar {
+  position: fixed;
+top: 56px; /* 🌟 PC 端放在吸顶 Header 下方 */
+left: 0;
+width: 280px;
+height: calc(100vh - 56px); /* 🌟 减去头部高度 */
+background-color: #ffffff;
+border-right: 1px solid #e0e0e0;
+display: flex;
+flex-direction: column;
+box-shadow: 4px 0 15px rgba(0, 0, 0, 0.02);
+z-index: 1000;
+font-family: inherit;
+transition: transform 0.2s ease;
+
+@media (max-width: 768px) {
+  top: 0; /* 🌟 手机端作为抽屉，覆盖整个屏幕 */
+  height: 100vh;
+  z-index: 1003; /* 🌟 确保在 Mask 和 Header 之上 */
+  transform: translateX(-100%);
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
+  
+  &.open {
+    transform: translateX(0);
+  }
+}
 
   /* 内部的元素全部嵌套在里面 */
   .header {
@@ -94,5 +116,13 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+  }
+}
+
+
+/* 🌟 移动端专属：当侧边栏打开时，显示遮罩层 */
+@media (max-width: 768px) {
+  .Sidebar.open + .sidebar-mask {
+    display: block;
   }
 }

@@ -1,26 +1,26 @@
 // src/App.tsx
+import { Show } from "solid-js";
+import { Layout } from "./Layout";
 import { Sidebar } from "./Sidebar";
 import { VideoPlayer } from "./VideoPlayer";
-import { DirectoryView } from "./DirectoryView"; // 🌟 引入新组件
+import { DirectoryView } from "./DirectoryView";
 import { videoUrl } from "./store";
-import { Show } from "solid-js";
 import "./style.css";
 
 export function App() {
   return (
-    <>
-      {/* 侧边栏始终存在 */}
-      <Sidebar />
-
-      {/* 主体内容区域：有视频就渲染 Player，没有就渲染目录 */}
-      <div id="app">
-        <Show 
-          when={videoUrl() !== ""} 
-          fallback={<DirectoryView />}
-        >
-          <VideoPlayer />
-        </Show>
-      </div>
-    </>
+    <Layout
+      // 🌟 接收三个参数，当场组装 Sidebar，依然保持绝对的解耦！
+      sidebar={(isOpen, setIsOpen, isMobile) => (
+        <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} isMobile={isMobile} />
+      )}
+    >
+      <Show 
+        when={videoUrl() !== ""} 
+        fallback={<DirectoryView />}
+      >
+        <VideoPlayer />
+      </Show>
+    </Layout>
   );
 }
