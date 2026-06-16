@@ -89,3 +89,19 @@ export function parseNginxHtml(htmlText: string, baseUrl: string = window.locati
 
   return { title, items };
 }
+
+
+// src/utils/parser.ts 末尾追加（替换上面那段）
+
+// ── 拦截器集成 ────────────────────────────────────────────
+export { applyInterceptors, registerInterceptor, unregisterInterceptor } from "./interceptors";
+
+/** 解析 HTML + 依次执行所有已注册拦截器，返回最终 ParseResult */
+export async function parseAndFilter(
+  htmlText: string,
+  dirUri: string
+): Promise<ParseResult> {
+  const { applyInterceptors } = await import("./interceptors");
+  const raw = parseNginxHtml(htmlText, dirUri);
+  return applyInterceptors(raw, dirUri);
+}

@@ -3,6 +3,12 @@ import { render } from "solid-js/web";
 import { App } from "./App";
 import { setVideoUrl, setIsHls } from "./store";
 
+// 在应用入口文件顶部注册，保证所有 parseAndFilter 调用前就绪
+import { registerInterceptor } from "./utils/interceptors";
+import { trashInterceptor }    from "./utils/trashInterceptor";
+
+registerInterceptor(trashInterceptor);
+
 function initPlugin() {
   const currentUrl = window.location.href;
   const isMp4 = /\.mp4(?:\?.*)?$/i.test(currentUrl);

@@ -1,7 +1,10 @@
 // src/Sidebar.tsx
 import { createSignal, onMount, For, Show } from "solid-js";
 import { parseNginxHtml, type FileNode } from "./utils/parser";
-import { videoUrl, setVideoUrl, setIsHls, setBrowseDir } from "./store";
+// import { videoUrl, setVideoUrl, setIsHls, setBrowseDir } from "./store";
+// 只改 import 和 handleItemClick 里的一行
+import { videoUrl, setVideoUrl, setIsHls, navigateDir } from "./store";
+
 import { sortItems, type SortMode } from "./utils/sort";
 import "./Sidebar.scss";
 
@@ -85,8 +88,15 @@ export const Sidebar = (props: SidebarProps) => {
     if (props.isMobile) props.setIsOpen(false);
 
     if (item.isDirectory) {
-      window.history.pushState(null, "", item.url);
-      setBrowseDir(item.url);
+      // window.history.pushState(null, "", item.url);
+      // setBrowseDir(item.url);
+      // setCurrentUrl(item.url);
+      // setParentFetched(false);
+      // setParentItems([]);
+      // fetchCurrent(item.url);
+      // setActiveTab("current");
+        window.history.pushState(null, "", item.url);
+      navigateDir(item.url);          // ← 原来是 setBrowseDir(item.url)
       setCurrentUrl(item.url);
       setParentFetched(false);
       setParentItems([]);
