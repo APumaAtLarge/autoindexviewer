@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      dexie:
+        specifier: ^4.4.3
+        version: 4.4.3
       glightbox:
         specifier: ^3.3.1
         version: 3.3.1
@@ -611,6 +614,9 @@ packages:
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
+
+  dexie@4.4.3:
+    resolution: {integrity: sha512-N+3IGQ3HPlyO2YAkntGAwitm42BpBGV86MttzUMiRzWLa4NGh0pltVRcUVF4ybL/OnXjCrr9k7SDPIKkFYP2Lg==}
 
   dom-serializer@3.1.1:
     resolution: {integrity: sha512-4MEa38/QexBob6gFNwu+EGdWvhJ1OKuNwdYY3Y3NyeWDQfnGeDYQUDfIRzWu5B5gsv03so2Uxd28YC6zrsx3Lw==}
@@ -1556,6 +1562,8 @@ snapshots:
   delegate@3.2.0: {}
 
   detect-libc@2.1.2: {}
+
+  dexie@4.4.3: {}
 
   dom-serializer@3.1.1:
     dependencies:

@@ -1,103 +1,230 @@
 // src/Sidebar.tsx
 import { createSignal, onMount, For, Show } from "solid-js";
 import { parseNginxHtml, type FileNode } from "./utils/parser";
-import { videoUrl, setVideoUrl, setIsHls } from "./store";
+import { videoUrl, setVideoUrl, setIsHls, setBrowseDir } from "./store";
+import { sortItems, type SortMode } from "./utils/sort";
 import "./Sidebar.scss";
 
-// 🌟 定义接收的 Props 类型
 interface SidebarProps {
   isOpen: boolean;
   isMobile: boolean;
   setIsOpen: (open: boolean) => void;
 }
 
-export const Sidebar = (props: SidebarProps) => {
-  const [items, setItems] = createSignal<FileNode[]>([]);
-  const [loading, setLoading] = createSignal<boolean>(true);
-  const [error, setError] = createSignal<string | null>(null);
+type TabId = "current" | "parent" | "playlist";
 
-  onMount(async () => {
-    // ... 原有 fetch 逻辑保持不变 ...
+const SORT_OPTIONS: { mode: SortMode; label: string }[] = [
+  { mode: "name",   label: "名称" },
+  { mode: "date",   label: "时间" },
+  { mode: "random", label: "随机" },
+];
+
+export const Sidebar = (props: SidebarProps) => {
+  const [activeTab,  setActiveTab]  = createSignal<TabId>("current");
+  const [sortMode,   setSortMode]   = createSignal<SortMode>("name");
+
+  // currentUrl：用户"当前所在"目录，不随 tab 切换改变
+  const [currentUrl, setCurrentUrl] = createSignal<string>(
+    new URL(".", window.location.href).href
+  );
+
+  // 父目录 URL，始终从 currentUrl 派生
+  const parentUrl = () => {
+    const url = new URL(currentUrl());
+    if (url.pathname === "/" || url.pathname === "") return null;
+    return new URL("../", url.href).href;
+  };
+
+  // 两套独立状态
+  const [currentItems,   setCurrentItems]   = createSignal<FileNode[]>([]);
+  const [currentLoading, setCurrentLoading] = createSignal<boolean>(true);
+  const [currentError,   setCurrentError]   = createSignal<string | null>(null);
+
+  const [parentItems,   setParentItems]   = createSignal<FileNode[]>([]);
+  const [parentLoading, setParentLoading] = createSignal<boolean>(false);
+  const [parentError,   setParentError]   = createSignal<string | null>(null);
+  const [parentFetched, setParentFetched] = createSignal<boolean>(false);
+
+  // 通用 fetch
+  const fetchItems = async (
+    targetUrl: string,
+    setLoading: (v: boolean) => void,
+    setError:   (v: string | null) => void,
+    setItems:   (v: FileNode[]) => void
+  ) => {
+    setLoading(true);
+    setError(null);
     try {
-      const targetFetchUrl = new URL(".", window.location.href).href;
-      const response = await fetch(targetFetchUrl);
+      const response = await fetch(targetUrl);
       if (!response.ok) throw new Error(`请求失败: ${response.status}`);
-      const htmlText = await response.text();
-      const result = parseNginxHtml(htmlText, targetFetchUrl);
-      setItems(result.items);
+      const html = await response.text();
+      setItems(parseNginxHtml(html, targetUrl).items);
     } catch (err: any) {
       setError(err.message || "未知错误");
     } finally {
       setLoading(false);
     }
-  });
-
-  const isVideoFile = (url: string) => {
-    return /\.(mp4|m3u8|mkv|avi|mov|webm)$/i.test(url);
   };
 
-  const handleItemClick = (item: FileNode) => {
-    // 🌟 核心修复：只有在移动端窄屏下，点击才需要自动折叠侧边栏！桌面端直接无视
-    if (props.isMobile) {
-      props.setIsOpen(false);
-    }
+  const fetchCurrent = (url: string) =>
+    fetchItems(url, setCurrentLoading, setCurrentError, setCurrentItems);
 
-    if (!item.isDirectory && isVideoFile(item.url)) {
-      // 播放视频单页逻辑
+  const fetchParent = () => {
+    const p = parentUrl();
+    if (!p) return;
+    setParentFetched(true);
+    fetchItems(p, setParentLoading, setParentError, setParentItems);
+  };
+
+  onMount(() => fetchCurrent(currentUrl()));
+
+  const isVideoFile = (url: string) =>
+    /\.(mp4|m3u8|mkv|avi|mov|webm)$/i.test(url);
+
+  const handleItemClick = (item: FileNode) => {
+    if (props.isMobile) props.setIsOpen(false);
+
+    if (item.isDirectory) {
+      window.history.pushState(null, "", item.url);
+      setBrowseDir(item.url);
+      setCurrentUrl(item.url);
+      setParentFetched(false);
+      setParentItems([]);
+      fetchCurrent(item.url);
+      setActiveTab("current");
+    } else if (isVideoFile(item.url)) {
       setVideoUrl(item.url);
       window.history.pushState(null, "", item.url);
     } else {
-      // 文件夹跳转逻辑
       window.location.href = item.url;
     }
   };
 
+  const handleTabChange = (tab: TabId) => {
+    setActiveTab(tab);
+    if (tab === "parent" && !parentFetched()) fetchParent();
+  };
+
+  const dirName = (url: string) => {
+    const path = new URL(url).pathname.replace(/\/$/, "");
+    const parts = path.split("/").filter(Boolean);
+    return parts.length > 0 ? parts[parts.length - 1] : "/";
+  };
+
+  const currentDirName = () => dirName(currentUrl());
+  const parentDirName  = () => {
+    const p = parentUrl();
+    return p ? dirName(p) : null;
+  };
+
+  const tabs: { id: TabId; label: () => string; icon: string; disabled?: () => boolean }[] = [
+    { id: "current",  label: currentDirName,                    icon: "📂" },
+    { id: "parent",   label: () => parentDirName() ?? "上级目录", icon: "⬆️", disabled: () => !parentUrl() },
+    { id: "playlist", label: () => "播放列表",                   icon: "▶️" },
+  ];
+
+  // 排序后的列表（派生计算）
+  const sortedCurrent = () => sortItems(currentItems(), sortMode());
+  const sortedParent  = () => sortItems(parentItems(),  sortMode());
+
+  const renderList = (
+    items: FileNode[],
+    loading: boolean,
+    error: string | null
+  ) => (
+    <>
+      <Show when={loading}>
+        <div class="status">正在载入目录...</div>
+      </Show>
+      <Show when={!!error}>
+        <div class="status error">❌ {error}</div>
+      </Show>
+      <Show when={!loading && !error}>
+        <ul class="list">
+          <For each={items}>
+            {(item) => (
+              <li
+                classList={{
+                  item: true,
+                  dir: item.isDirectory,
+                  file: !item.isDirectory,
+                  active: item.isDirectory
+                    ? currentUrl() === item.url
+                    : videoUrl() === item.url,
+                }}
+                onClick={() => handleItemClick(item)}
+                title={item.name}
+              >
+                <span class="icon">{item.isDirectory ? "📁" : "🎬"}</span>
+                <span class="name">{item.name}</span>
+              </li>
+            )}
+          </For>
+        </ul>
+      </Show>
+    </>
+  );
+
   return (
     <>
-      {/* 🌟 这里的按钮已经删除了，保持干净 */}
-
-      {/* 🌟 绑定父级传下来的 props.isOpen */}
       <div classList={{ Sidebar: true, open: props.isOpen }}>
-        <div class="header">
-          <h3>📂 媒体目录</h3>
-          <span class="subtitle">当前目录层级</span>
+
+        {/* ── 上方：目录 Tab Bar ── */}
+        <div class="tab-bar">
+          <For each={tabs}>
+            {(tab) => (
+              <button
+                classList={{
+                  tab: true,
+                  active: activeTab() === tab.id,
+                  disabled: tab.disabled?.() ?? false,
+                }}
+                onClick={() => !(tab.disabled?.()) && handleTabChange(tab.id)}
+                title={tab.label()}
+              >
+                <span class="tab-icon">{tab.icon}</span>
+                <span class="tab-label">{tab.label()}</span>
+              </button>
+            )}
+          </For>
         </div>
 
-        <Show when={loading()}>
-          <div class="status">正在载入目录...</div>
-        </Show>
-
-        <Show when={error()}>
-          <div class="status error">❌ {error()}</div>
-        </Show>
-
-        <Show when={!loading() && !error()}>
-          <ul class="list">
-            <For each={items()}>
-              {(item) => (
-                <li
-                  classList={{
-                    item: true,
-                    dir: item.isDirectory,
-                    file: !item.isDirectory,
-                    active: item.isDirectory
-                      ? window.location.href === item.url
-                      : videoUrl() === item.url,
-                  }}
-                  onClick={() => handleItemClick(item)}
-                  title={item.name}
+        {/* ── 下方：排序 Bar（仅目录类 tab 显示） ── */}
+        <Show when={activeTab() !== "playlist"}>
+          <div class="sort-bar">
+            <span class="sort-label">排序</span>
+            <For each={SORT_OPTIONS}>
+              {(opt) => (
+                <button
+                  classList={{ "sort-btn": true, active: sortMode() === opt.mode }}
+                  onClick={() => setSortMode(opt.mode)}
                 >
-                  <span class="icon">{item.isDirectory ? "📁" : "🎬"}</span>
-                  <span class="name">{item.name}</span>
-                </li>
+                  {opt.label}
+                </button>
               )}
             </For>
-          </ul>
+          </div>
         </Show>
+
+        {/* ── 内容区 ── */}
+        <Show when={activeTab() === "current"}>
+          {renderList(sortedCurrent(), currentLoading(), currentError())}
+        </Show>
+
+        <Show when={activeTab() === "parent"}>
+          {renderList(sortedParent(), parentLoading(), parentError())}
+        </Show>
+
+        <Show when={activeTab() === "playlist"}>
+          <div class="status empty">
+            <span class="empty-icon">🎵</span>
+            <span>播放列表暂未实现</span>
+          </div>
+        </Show>
+
       </div>
 
-      {/* 🌟 点击遮罩层，调用父级传入的 setter 关闭侧边栏 */}
-      <div class="sidebar-mask" onClick={() => props.setIsOpen(false)}></div>
+      <div class="sidebar-mask" onClick={() => props.setIsOpen(false)} />
     </>
   );
 };

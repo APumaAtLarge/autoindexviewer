@@ -1,65 +1,38 @@
 // src/VideoPlayer.tsx
-import { createEffect, onCleanup, Show } from "solid-js";
-import Player from "xgplayer";
-import HlsPlugin from "xgplayer-hls";
-import "xgplayer/dist/index.min.css";
+import { createEffect, onMount, onCleanup, Show } from "solid-js";
 import { videoUrl, isHls } from "./store";
+import { mountPlayer, unmountPlayer, switchVideo } from "./player";
 import "./VideoPlayer.scss";
+
 export function VideoPlayer() {
   let containerRef!: HTMLDivElement;
-  let player: Player | null = null;
 
-  // 使用 createEffect：当 videoUrl 发生变化时，自动重新加载播放器
+  // 组件挂载：把容器交给 player 单例
+  onMount(() => mountPlayer(containerRef));
+
+  // 组件卸载：解除容器引用（不销毁实例）
+  onCleanup(() => unmountPlayer());
+
+  // videoUrl 变化时通知单例切换视频
   createEffect(() => {
     const url = videoUrl();
-    if (!url) return;
-
-    // 如果已经有实例存在，先销毁旧实例（支持无缝切换视频）
-    if (player) {
-      player.destroy();
-      player = null;
-    }
-
-    const playerConfig: any = {
-      el: containerRef,
-      url: url,
-    //  fluid: true,
-    // 🌟 2. 强制播放器内部实例尺寸为 100%，完全听从父级 CSS 的指挥
-    width: "100%",
-    height: "100%",
-      videoFillMode: "contain", // 🌟 替代 fitVideoSize，确保视频完整显示
-      autoplay: true,
-      volume: 0.6,
-      lang: "zh-cn",
-      playbackRate: [0.5, 0.75, 1, 1.25, 1.5, 2],
-      pip: true,
-      cssFullscreen: true,
-      download: !isHls(),
-    };
-
-    if (isHls()) {
-      playerConfig.plugins = [HlsPlugin];
-    }
-
-    player = new Player(playerConfig);
-
-    player.on("play", () => {
-      console.log("XGPlayer: 视频开始播放");
-    });
-  });
-
-  // 组件卸载时清理内存
-  onCleanup(() => {
-    if (player) {
-      player.destroy();
-    }
+    if (url) switchVideo(url);
   });
 
   return (
     <Show when={videoUrl()}>
       <div class="VideoPlayer">
-        <div class="title">XGPlayer 视频播放器 {isHls() ? "(HLS流)" : ""}</div>
-        <div class="player-container" ref={containerRef}></div>
+        <div class="title">
+          {isHls() ? "▶ HLS 流" : "▶ 视频播放器"}
+        </div>
+        {/*
+          伪元素占位：padding-top: 56.25% = 16:9
+          容器自身高度为 0，由 padding 撑开，子元素绝对定位填满。
+          这样无论外部宽度如何变化，比例永远锁定，不会变形。
+        */}
+        <div class="player-wrapper">
+          <div class="player-container" ref={containerRef} />
+        </div>
       </div>
     </Show>
   );

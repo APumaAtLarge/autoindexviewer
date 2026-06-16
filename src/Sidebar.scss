@@ -1,4 +1,3 @@
-
 /* 移动端遮罩层 */
 .sidebar-mask {
   display: none;
@@ -8,56 +7,138 @@
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.4);
-  z-index: 999; /* 略低于 Sidebar 的 1000 */
+  z-index: 999;
 }
-/* 用同名类名作为命名空间，防止污染原网页的全局样式 */
+
 .Sidebar {
   position: fixed;
-top: 56px; /* 🌟 PC 端放在吸顶 Header 下方 */
-left: 0;
-width: 280px;
-height: calc(100vh - 56px); /* 🌟 减去头部高度 */
-background-color: #ffffff;
-border-right: 1px solid #e0e0e0;
-display: flex;
-flex-direction: column;
-box-shadow: 4px 0 15px rgba(0, 0, 0, 0.02);
-z-index: 1000;
-font-family: inherit;
-transition: transform 0.2s ease;
+  top: 56px;
+  left: 0;
+  width: 280px;
+  height: calc(100vh - 56px);
+  background-color: #ffffff;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.02);
+  z-index: 1000;
+  font-family: inherit;
+  transition: transform 0.2s ease;
 
-@media (max-width: 768px) {
-  top: 0; /* 🌟 手机端作为抽屉，覆盖整个屏幕 */
-  height: 100vh;
-  z-index: 1003; /* 🌟 确保在 Mask 和 Header 之上 */
-  transform: translateX(-100%);
-  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
-  
-  &.open {
-    transform: translateX(0);
+  @media (max-width: 768px) {
+    top: 0;
+    height: 100vh;
+    z-index: 1003;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
+
+    &.open {
+      transform: translateX(0);
+    }
   }
-}
 
-  /* 内部的元素全部嵌套在里面 */
-  .header {
-    padding: 20px;
-    border-bottom: 1px solid #e8e8e8;
+  /* ── Tab Bar ── */
+  .tab-bar {
+    display: flex;
+    border-bottom: 1px solid #e0e0e0;
     background-color: #fafafa;
+    flex-shrink: 0;
+  }
 
-    h3 {
-      margin: 0;
-      color: #1a1a1a;
-      font-size: 16px;
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 4px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #888;
+    font-size: 11px;
+    font-family: inherit;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    min-width: 0; /* allow text truncation */
+
+    &:hover:not(.disabled) {
+      color: #4f66ff;
+      background-color: #f0f4ff;
     }
 
-    .subtitle {
+    &.active {
+      color: #4f66ff;
+      border-bottom-color: #4f66ff;
+      background-color: #f0f4ff;
+    }
+
+    &.disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .tab-icon {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .tab-label {
       font-size: 11px;
-      color: #999;
-      display: block;
-      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 72px;
+      line-height: 1.2;
     }
   }
 
+  /* ── Sort Bar ── */
+  .sort-bar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    border-bottom: 1px solid #ebebeb;
+    background-color: #f7f7f7;
+    flex-shrink: 0;
+  }
+
+  .sort-label {
+    font-size: 11px;
+    color: #aaa;
+    margin-right: 2px;
+    white-space: nowrap;
+  }
+
+  .sort-btn {
+    padding: 2px 10px;
+    font-size: 11px;
+    font-family: inherit;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    background: #fff;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+    white-space: nowrap;
+
+    &:hover {
+      color: #4f66ff;
+      border-color: #c5cfff;
+      background: #f0f4ff;
+    }
+
+    &.active {
+      color: #4f66ff;
+      border-color: #4f66ff;
+      background: #e8edff;
+      font-weight: 600;
+    }
+  }
+
+  /* ── Status / empty states ── */
   .status {
     padding: 20px;
     color: #999;
@@ -67,8 +148,24 @@ transition: transform 0.2s ease;
     &.error {
       color: #ff4d4f;
     }
+
+    &.empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 40px 20px;
+      color: #bbb;
+      font-size: 13px;
+
+      .empty-icon {
+        font-size: 32px;
+        opacity: 0.5;
+      }
+    }
   }
 
+  /* ── File list ── */
   .list {
     list-style: none;
     padding: 10px 0;
@@ -119,8 +216,7 @@ transition: transform 0.2s ease;
   }
 }
 
-
-/* 🌟 移动端专属：当侧边栏打开时，显示遮罩层 */
+/* 移动端：侧边栏打开时显示遮罩 */
 @media (max-width: 768px) {
   .Sidebar.open + .sidebar-mask {
     display: block;

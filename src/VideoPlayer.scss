@@ -6,35 +6,51 @@
   flex-direction: column;
 
   .title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 12px;
-    flex-shrink: 0; /* 防止标题被压缩 */
+    font-size: 15px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
   }
 
-  .player-container {
-    width: 70%;
+  /*
+   * 16:9 占位包装层
+   * height: 0 + padding-top: 56.25% 是经典 CSS 伪元素等比占位技巧。
+   * 宽度任意变化时，高度始终 = 宽度 × 9/16，绝对不会出现纵向滚动条。
+   */
+  .player-wrapper {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-top: 56.25%; /* 9 / 16 = 0.5625 */
 
-    /* 🌟 核心：计算时扣除你的顶栏(56px) + 页面外边距 + title高度，确保绝对不会出滚动条 */
+    /* PC 端：限制最大高度，防止超宽屏撑得太高 */
     max-height: calc(100vh - 160px);
 
-    /* 🌟 基础比例 */
-    aspect-ratio: 16 / 9;
-
-    background-color: #000;
-    border-radius: 8px;
+    /*
+     * max-height 对 padding-top 无效，需要用 overflow: hidden 配合。
+     * 当 padding 撑出的高度超过 max-height 时，超出部分被裁切，
+     * 播放器仍然等比，只是视口高度封顶。
+     */
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    background: #000;
+  }
 
-    /* 为了美观，当宽度不到 100% 时让它居中 */
-    margin: 0 auto;
+  /*
+   * 播放器真正的挂载容器：绝对定位填满占位层。
+   * XGPlayer 的 width/height 设为 100% 后完全听从这个容器。
+   */
+  .player-container {
+    position: absolute;
+    inset: 0; /* top/right/bottom/left: 0 的简写 */
 
-    /* 🌟 让 XGPlayer 完全服从外部容器的高度，不要自己加内边距 */
     :global(.xgplayer) {
       width: 100% !important;
       height: 100% !important;
-      padding-top: 0 !important; /* 强制干掉潜在的内边距残留 */
+      padding-top: 0 !important;
     }
 
     :global(video) {
@@ -45,10 +61,10 @@
   }
 }
 
-/* 🌟 移动端适配：手机屏幕小，就直接 100% 宽度，并解除高度限制 */
+/* 移动端：解除高度封顶，100% 宽自然等比 */
 @media (max-width: 768px) {
-  .VideoPlayer .player-container {
-    width: 100%;
+  .VideoPlayer .player-wrapper {
     max-height: none;
+    border-radius: 0;
   }
 }
