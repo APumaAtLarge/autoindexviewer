@@ -3,12 +3,17 @@
   width: 100%;
   padding: 20px;
   box-sizing: border-box;
+  height: 100%; 
+  display: flex;
+  flex-direction: column;
+
   .dir-loading {
-padding: 60px 20px;
-text-align: center;
-font-size: 16px;
-color: #999;
-}
+    padding: 60px 20px;
+    text-align: center;
+    font-size: 16px;
+    color: #999;
+  }
+
   .dir-title {
     font-size: 22px;
     color: #333;
@@ -19,130 +24,74 @@ color: #999;
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-shrink: 0;
   }
 
-  //   .file-grid {
-  //     display: grid;
-  //     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  //     gap: 20px;
-  //     max-width: 980px; /* 160*5 + 20*4 = 980 */
-  //   }
-  .file-grid {
-    display: grid;
-    gap: 20px;
-
-    /* 默认大屏：五列均匀展开 */
-    grid-template-columns: repeat(5, 1fr);
-
-    @media (max-width: 1024px) {
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    @media (max-width: 768px) {
-      gap: 12px;
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    @media (max-width: 480px) {
-      gap: 10px;
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  
-
-  .file-card {
+  /* ── 图片单页预览布局 ── */
+  .image-preview-view {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: #fff;
-    border: 1px solid #222; /* 外黑边框 */
-    border-radius: 12px;
-    text-decoration: none;
-    color: #333;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    overflow: hidden;
-    padding: 0;
-    position: relative; /* 供子元素绝对定位 */
+    flex: 1; 
+    min-height: 0; 
+    height: 100%;
 
-    &:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-      border-color: #4f66ff;
-    }
-
-    &.is-dir {
-      background: #fafbff;
-    }
-
-    .cover-wrapper {
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background-color: #1a1a1a; /* 无图时背景深色，图标白色好看 */
+    .preview-header {
       display: flex;
       align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      position: relative;
+      gap: 16px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #eee;
+      flex-shrink: 0;
+
+      .back-dir-btn {
+        background: #f5f5f5;
+        border: 1px solid #d9d9d9;
+        padding: 6px 14px;
+        border-radius: 4px;
+        font-size: 14px;
+        color: #333;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          background: #e8e8e8;
+          border-color: #bababa;
+        }
+      }
+
+      .image-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: #555;
+        word-break: break-all;
+      }
     }
 
-    .cover-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .icon {
-      font-size: 40px;
-      margin: 0; /* cover-wrapper 已经居中，不需要额外 margin */
-    }
-
-    /* 文字叠层：绝对定位到底部 */
-    .name {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      font-size: 13px;
-      text-align: left;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: #fff; /* 白字 */
-      padding: 20px 10px 8px;
-      box-sizing: border-box;
-      /* 底部渐变遮罩，让文字可读 */
-      background: linear-gradient(
-        to bottom,
-        transparent 0%,
-        rgba(0, 0, 0, 0.65) 100%
-      );
-      z-index: 1;
-    }
-
-    .file-meta {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
+    .image-container {
+      flex: 1; 
+      min-height: 0; 
       display: flex;
-      justify-content: space-between;
-      padding: 0 10px 6px;
-      font-size: 11px;
-      color: rgba(255, 255, 255, 0.75);
+      justify-content: center;
+      align-items: center;
+      background: #f1f2f4;
+      border-radius: 8px;
+      padding: 16px;
       box-sizing: border-box;
-      z-index: 1;
-    }
-  }
+      border: 1px solid #eaeaea;
 
-  /* 有 meta 时 name 上移，避免遮住大小/日期 */
-  .file-card:has(.file-meta) .name {
-    padding-bottom: 22px; /* 给 meta 腾出空间 */
+      .preview-img {
+        max-width: 100%;
+        max-height: 100%; 
+        object-fit: contain; 
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+    }
   }
 }
 
+// 移动端响应式
 @media (max-width: 768px) {
   .DirectoryView {
     padding: 12px;
@@ -152,32 +101,16 @@ color: #999;
       margin-bottom: 16px;
       padding-bottom: 8px;
     }
-
-    .file-grid {
+    
+    .image-preview-view .preview-header {
+      flex-direction: column;
+      align-items: flex-start;
       gap: 10px;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    }
-
-    .file-card {
-      border-radius: 8px;
-
-      .icon {
-        font-size: 28px;
-      }
-
-      .name {
-        font-size: 12px;
-        padding: 16px 8px 6px;
-      }
-
-      .file-meta {
-        font-size: 10px;
-        padding: 0 8px 5px;
-      }
     }
   }
 }
 
+/* ── 全局 GLightbox 样式插件覆盖 ── */
 .gslide-image img {
   width: 95vw !important;
   height: 95vh !important;
@@ -185,5 +118,5 @@ color: #999;
 }
 
 .gslide-description {
-display: none !important;
+  display: none !important;
 }
