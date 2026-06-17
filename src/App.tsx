@@ -4,7 +4,8 @@ import { Layout } from "./Layout";
 import { Sidebar } from "./Sidebar";
 import { VideoPlayer } from "./VideoPlayer";
 import { DirectoryView } from "./DirectoryView";
-import { videoUrl } from "./store";
+// import { videoUrl } from "./store.ts.bak";
+import { videoUrl } from "./store/urlParams";
 import "./style.css";
 
 export function App() {

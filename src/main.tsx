@@ -1,7 +1,7 @@
 // src/main.tsx
 import { render } from "solid-js/web";
 import { App } from "./App";
-import { setVideoUrl, setIsHls } from "./store";
+import { setVideoUrl,setIsHls } from "./store/urlParams";
 
 // 在应用入口文件顶部注册，保证所有 parseAndFilter 调用前就绪
 import { registerInterceptor } from "./utils/interceptors";

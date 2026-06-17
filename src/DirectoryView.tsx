@@ -2,7 +2,9 @@
 import { createSignal, onMount, onCleanup, createEffect, Show } from "solid-js";
 import { type FileNode } from "./utils/parser";
 import { fetchDirectory } from "./api/directory";
-import { setVideoUrl, setIsHls, browseDir, navigateDir } from "./store";
+// import { setVideoUrl, setIsHls, browseDir, navigateDir } from "./store.ts.bak";
+import { browseDir,navigateDir } from "./store/browseDir";
+import { setVideoUrl,setIsHls } from "./store/urlParams";
 import { isImageUrl } from "./utils/isImage";
 import { DirectoryGrid } from "./DirectoryGrid"; // 引入拆分出的组件
 import "./DirectoryView.scss";

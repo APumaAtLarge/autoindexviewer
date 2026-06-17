@@ -1,37 +1,68 @@
 // src/VideoPlayer.tsx
-import { createEffect, onMount, onCleanup, Show } from "solid-js";
-import { videoUrl, isHls } from "./store";
-import { mountPlayer, unmountPlayer, switchVideo } from "./player";
-import { trashFile } from "./db"; // 引入 db 操作
+// ✨ 注意引入 createSignal
+import { createEffect, onMount, onCleanup, Show, createSignal } from "solid-js";
+import { videoUrl, isHls } from "./store/urlParams";
+// ✨ 引入 pausePlayer
+import { mountPlayer, unmountPlayer, switchVideo, pausePlayer } from "./player";
+import { trashFile } from "./db"; 
 import "./VideoPlayer.scss";
 import toast from "./ui/toast";
+
 export function VideoPlayer() {
   let containerRef!: HTMLDivElement;
+  
+  // ✨ 新增：睡眠定时器状态与 ID
+  const [sleepActive, setSleepActive] = createSignal(false);
+  let sleepTimerId: number | null = null;
 
   onMount(() => mountPlayer(containerRef));
-  onCleanup(() => unmountPlayer());
+  
+  onCleanup(() => {
+    unmountPlayer();
+    // ✨ 组件卸载时清理定时器，防内存泄漏
+    if (sleepTimerId) window.clearTimeout(sleepTimerId);
+  });
 
   createEffect(() => {
     const url = videoUrl();
     if (url) switchVideo(url);
   });
 
-  // 处理删除逻辑
+  // ✨ 新增：切换 30 分钟定时逻辑
+  const toggleSleepTimer = () => {
+    if (sleepActive()) {
+      // 取消定时
+      setSleepActive(false);
+      if (sleepTimerId) window.clearTimeout(sleepTimerId);
+      toast.success("已取消定时关闭");
+    } else {
+      // 开启定时 (30分钟 = 30 * 60 * 1000 毫秒)
+      setSleepActive(true);
+      toast.success("将在 30 分钟后停止播放，允许手机自动息屏");
+      sleepTimerId = window.setTimeout(() => {
+        pausePlayer(); // 暂停视频，浏览器自动释放阻止息屏的机制
+        setSleepActive(false);
+        toast.success("定时已结束，视频已暂停");
+      }, 30 * 60 * 1000); 
+    }
+  };
+
   const handleDelete = async () => {
     const currentUrl = videoUrl();
     if (!currentUrl) return;
 
-    // 从当前 URL 推断目录和文件名
     const lastSlashIdx = currentUrl.lastIndexOf("/");
     if (lastSlashIdx === -1) return;
 
     const dirUri = currentUrl.substring(0, lastSlashIdx + 1);
     const fileName = decodeURIComponent(currentUrl.substring(lastSlashIdx + 1));
 
+    const isConfirmed = await toast.confirm(`确定要将 "${fileName}" 移入垃圾桶吗？`);
+    if (!isConfirmed) return; 
+
     try {
       await trashFile(dirUri, currentUrl, fileName);
       toast.success(`已将 "${fileName}" 移入垃圾桶`);
-      // 注意：这里仅写入了 IndexedDB，当前视频仍在播放
     } catch (err) {
       console.error("删除失败", err);
       toast.error("删除失败，请查看控制台");
@@ -41,12 +72,21 @@ export function VideoPlayer() {
   return (
     <Show when={videoUrl()}>
       <div class="VideoPlayer">
-        {/* 将 title 包裹在 header 容器中 */}
         <div class="header">
           <div class="title">{isHls() ? "▶ HLS 流" : "▶ 视频播放器"}</div>
-          <button class="delete-btn" onClick={handleDelete}>
-            删除文件
-          </button>
+          
+          {/* ✨ 新增：用一个 actions 容器包裹两个按钮 */}
+          <div class="actions">
+            <button 
+              class={`sleep-btn ${sleepActive() ? 'active' : ''}`} 
+              onClick={toggleSleepTimer}
+            >
+              {sleepActive() ? '⏰ 取消定时' : '⏱️ 30分定时'}
+            </button>
+            <button class="delete-btn" onClick={handleDelete}>
+              删除文件
+            </button>
+          </div>
         </div>
 
         <div class="player-wrapper">
@@ -56,43 +96,3 @@ export function VideoPlayer() {
     </Show>
   );
 }
-
-// // src/VideoPlayer.tsx
-// import { createEffect, onMount, onCleanup, Show } from "solid-js";
-// import { videoUrl, isHls } from "./store";
-// import { mountPlayer, unmountPlayer, switchVideo } from "./player";
-// import "./VideoPlayer.scss";
-
-// export function VideoPlayer() {
-//   let containerRef!: HTMLDivElement;
-
-//   // 组件挂载：把容器交给 player 单例
-//   onMount(() => mountPlayer(containerRef));
-
-//   // 组件卸载：解除容器引用（不销毁实例）
-//   onCleanup(() => unmountPlayer());
-
-//   // videoUrl 变化时通知单例切换视频
-//   createEffect(() => {
-//     const url = videoUrl();
-//     if (url) switchVideo(url);
-//   });
-
-//   return (
-//     <Show when={videoUrl()}>
-//       <div class="VideoPlayer">
-//         <div class="title">
-//           {isHls() ? "▶ HLS 流" : "▶ 视频播放器"}
-//         </div>
-//         {/*
-//           伪元素占位：padding-top: 56.25% = 16:9
-//           容器自身高度为 0，由 padding 撑开，子元素绝对定位填满。
-//           这样无论外部宽度如何变化，比例永远锁定，不会变形。
-//         */}
-//         <div class="player-wrapper">
-//           <div class="player-container" ref={containerRef} />
-//         </div>
-//       </div>
-//     </Show>
-//   );
-// }

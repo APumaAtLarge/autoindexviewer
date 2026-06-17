@@ -1,75 +1,3 @@
-// /* src/VideoPlayer.scss */
-// .VideoPlayer {
-//   width: 100%;
-//   box-sizing: border-box;
-//   display: flex;
-//   flex-direction: column;
-
-//   .title {
-//     font-size: 15px;
-//     font-weight: 600;
-//     color: #555;
-//     margin-bottom: 10px;
-//     flex-shrink: 0;
-//     letter-spacing: 0.02em;
-//   }
-
-//   /*
-//    * 16:9 占位包装层
-//    * height: 0 + padding-top: 56.25% 是经典 CSS 伪元素等比占位技巧。
-//    * 宽度任意变化时，高度始终 = 宽度 × 9/16，绝对不会出现纵向滚动条。
-//    */
-//   .player-wrapper {
-//     position: relative;
-//     width: 100%;
-//     height: 0;
-//     padding-top: 56.25%; /* 9 / 16 = 0.5625 */
-
-//     /* PC 端：限制最大高度，防止超宽屏撑得太高 */
-//     max-height: calc(100vh - 160px);
-
-//     /*
-//      * max-height 对 padding-top 无效，需要用 overflow: hidden 配合。
-//      * 当 padding 撑出的高度超过 max-height 时，超出部分被裁切，
-//      * 播放器仍然等比，只是视口高度封顶。
-//      */
-//     overflow: hidden;
-//     border-radius: 8px;
-//     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-//     background: #000;
-//   }
-
-//   /*
-//    * 播放器真正的挂载容器：绝对定位填满占位层。
-//    * XGPlayer 的 width/height 设为 100% 后完全听从这个容器。
-//    */
-//   .player-container {
-//     position: absolute;
-//     inset: 0; /* top/right/bottom/left: 0 的简写 */
-
-//     :global(.xgplayer) {
-//       width: 100% !important;
-//       height: 100% !important;
-//       padding-top: 0 !important;
-//     }
-
-//     :global(video) {
-//       width: 100% !important;
-//       height: 100% !important;
-//       object-fit: contain;
-//     }
-//   }
-// }
-
-// /* 移动端：解除高度封顶，100% 宽自然等比 */
-// @media (max-width: 768px) {
-//   .VideoPlayer .player-wrapper {
-//     max-height: none;
-//     border-radius: 0;
-//   }
-// }
-
-
 /* src/VideoPlayer.scss */
 .VideoPlayer {
   width: 100%;
@@ -92,7 +20,36 @@
       letter-spacing: 0.02em;
       margin: 0; /* 移除原有 margin-bottom，交由 header 控制 */
     }
+    /* ✨ 新增：按钮组容器 */
+    .actions {
+      display: flex;
+      gap: 8px; /* 两个按钮之间的间距 */
+    }
 
+    /* ✨ 新增：定时按钮样式及按下状态 */
+    .sleep-btn {
+      background: #f0f0f0;
+      color: #333;
+      border: 1px solid #ddd;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #e4e4e4;
+      }
+
+      /* 按下（开启定时）后的状态 */
+      &.active {
+        background: #e6f4ff;
+        color: #1677ff;
+        border-color: #1677ff;
+        /* 使用内阴影制造凹陷按下的视觉效果 */
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+    }
     .delete-btn {
       background: #ff4d4f;
       color: white;
@@ -116,11 +73,11 @@
     position: relative;
     width: 100%;
     /* 现代 CSS：直接声明纵横比，彻底告别 padding-top Hack */
-    aspect-ratio: 16 / 9; 
-    
+    aspect-ratio: 16 / 9;
+
     /* 此时 max-height 会完美生效，达到阈值后盒子不会继续长高 */
     max-height: calc(100vh - 160px);
-    
+
     border-radius: 8px;
     background: #000;
     overflow: hidden;
@@ -130,19 +87,6 @@
   .player-container {
     position: absolute;
     inset: 0;
-
-    :global(.xgplayer) {
-      width: 100% !important;
-      height: 100% !important;
-      /* 别忘了把这里的 padding-top 也彻底清理掉 */
-    }
-
-    :global(video) {
-      width: 100% !important;
-      height: 100% !important;
-      /* 当容器被 max-height 压扁时，视频会保持比例并出现上下/左右黑边，这是完美预期 */
-      object-fit: contain; 
-    }
   }
 }
 

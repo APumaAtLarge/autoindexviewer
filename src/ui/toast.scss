@@ -1,5 +1,4 @@
-// src/toast.scss
-// src/toast.scss
+// src/ui/toast.scss
 
 // === 变量定义 ===
 $host-z-index: 999999;
@@ -13,6 +12,13 @@ $color-success-text: #67c23a;
 $color-error-bg: #fef0f0;
 $color-error-border: #fde2e2;
 $color-error-text: #f56c6c;
+
+// 新增 Confirm 变量
+$color-confirm-bg: #ffffff;
+$color-confirm-border: #ebeef5;
+$color-confirm-text: #606266;
+$color-primary: #409eff;
+$color-primary-hover: #66b1ff;
 
 $box-shadow-base: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08);
 
@@ -68,6 +74,58 @@ $box-shadow-base: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0,
       background-color: $color-error-bg;
       border: 1px solid $color-error-border;
       color: $color-error-text;
+    }
+
+    /* === 新增：Confirm 状态 === */
+    &.el-message-confirm {
+      background-color: $color-confirm-bg;
+      border: 1px solid $color-confirm-border;
+      color: $color-confirm-text;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
+
+      .confirm-message {
+        font-size: 14px;
+      }
+
+      .confirm-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+
+        button {
+          padding: 6px 14px;
+          font-size: 12px;
+          border-radius: 4px;
+          cursor: pointer;
+          border: 1px solid transparent;
+          transition: all 0.2s;
+          outline: none;
+
+          &.btn-cancel {
+            background: #ffffff;
+            border-color: #dcdfe6;
+            color: #606266;
+            &:hover {
+              color: $color-primary;
+              border-color: #c6e2ff;
+              background-color: #ecf5ff;
+            }
+          }
+
+          &.btn-confirm {
+            background: $color-primary;
+            border-color: $color-primary;
+            color: #ffffff;
+            &:hover {
+              background: $color-primary-hover;
+              border-color: $color-primary-hover;
+            }
+          }
+        }
+      }
     }
   }
 }

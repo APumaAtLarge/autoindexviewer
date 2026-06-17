@@ -1,3 +1,5 @@
+/* src/Sidebar.scss */
+
 /* 移动端遮罩层 */
 .sidebar-mask {
   display: none;
@@ -61,7 +63,7 @@
     font-family: inherit;
     border-bottom: 2px solid transparent;
     transition: color 0.15s, border-color 0.15s, background 0.15s;
-    min-width: 0; /* allow text truncation */
+    min-width: 0;
 
     &:hover:not(.disabled) {
       color: #4f66ff;
@@ -138,6 +140,103 @@
     }
   }
 
+  /* ── Playlist Toolbar ── */
+  .playlist-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 6px 10px;
+    border-bottom: 1px solid #ebebeb;
+    background-color: #f7f7f7;
+    flex-shrink: 0;
+  }
+
+  .toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .toolbar-btn {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-family: inherit;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    background: #fff;
+    color: #555;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+
+    &:hover:not(:disabled) {
+      color: #4f66ff;
+      border-color: #c5cfff;
+      background: #f0f4ff;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &--danger:hover:not(:disabled) {
+      color: #d32f2f;
+      border-color: #ffcdd2;
+      background: #ffebee;
+    }
+
+    .toolbar-btn-icon {
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .toolbar-btn-label {
+      font-size: 11px;
+    }
+  }
+
+  /* ── Play Mode Group ── */
+  .mode-group {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    background: #e8e8e8;
+    border-radius: 20px;
+    padding: 2px;
+    flex-shrink: 0;
+  }
+
+  .mode-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 22px;
+    font-size: 13px;
+    border: none;
+    border-radius: 18px;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.15s;
+    line-height: 1;
+
+    &:hover {
+      background: rgba(79, 102, 255, 0.12);
+    }
+
+    &.active {
+      background: #4f66ff;
+      /* emoji 在深色背景上已够清晰，无需额外 filter */
+    }
+  }
+
   /* ── Status / empty states ── */
   .status {
     padding: 20px;
@@ -177,7 +276,7 @@
   .item {
     display: flex;
     align-items: center;
-    padding: 10px 20px;
+    padding: 8px 12px 8px 20px;
     cursor: pointer;
     transition: all 0.2s ease;
     border-left: 3px solid transparent;
@@ -212,6 +311,52 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  /* ── Playlist specific item styles ── */
+  .playlist-list .item {
+    padding-left: 10px;
+    gap: 0;
+
+    &:hover .playlist-remove {
+      opacity: 1;
+    }
+  }
+
+  .playlist-index {
+    font-size: 11px;
+    color: #bbb;
+    width: 22px;
+    text-align: right;
+    flex-shrink: 0;
+    margin-right: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .playlist-remove {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+    border: none;
+    background: transparent;
+    color: #bbb;
+    cursor: pointer;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s, background 0.15s;
+    padding: 0;
+    line-height: 1;
+
+    &:hover {
+      color: #d32f2f;
+      background: #ffebee;
     }
   }
 }

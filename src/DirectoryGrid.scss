@@ -85,7 +85,7 @@
     background: linear-gradient(
       to bottom,
       transparent 0%,
-      rgba(0, 0, 0, 0.65) 100% 
+      rgba(0, 0, 0, 0.65) 100%
     );
     z-index: 1;
   }
@@ -134,49 +134,48 @@
   }
 }
 
+// /* 在 src/DirectoryGrid.scss 末尾追加 */
 
-/* 在 src/DirectoryGrid.scss 末尾追加 */
+// // 嵌套在 GLightbox 全局生成的容器内
+// :global(.glightbox-container) {
+//   .grotate-btn {
+//     position: absolute;
+//     top: 15px;
+//     right: 70px; /* 紧贴在原生关闭按钮左侧 */
+//     background: rgba(0, 0, 0, 0.5);
+//     color: #fff;
+//     border: 1px solid rgba(255, 255, 255, 0.25);
+//     padding: 7px 14px;
+//     border-radius: 6px;
+//     font-size: 13px;
+//     font-weight: 500;
+//     cursor: pointer;
+//     z-index: 999999; /* 确保在遮罩层最上方 */
+//     transition: all 0.2s ease;
+//     display: flex;
+//     align-items: center;
+//     gap: 4px;
 
-// 嵌套在 GLightbox 全局生成的容器内
-:global(.glightbox-container) {
-  .grotate-btn {
-    position: absolute;
-    top: 15px;
-    right: 70px; /* 紧贴在原生关闭按钮左侧 */
-    background: rgba(0, 0, 0, 0.5);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    padding: 7px 14px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    z-index: 999999; /* 确保在遮罩层最上方 */
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+//     &:hover {
+//       background: rgba(0, 0, 0, 0.8);
+//       border-color: rgba(255, 255, 255, 0.6);
+//       transform: scale(1.05);
+//     }
 
-    &:hover {
-      background: rgba(0, 0, 0, 0.8);
-      border-color: rgba(255, 255, 255, 0.6);
-      transform: scale(1.05);
-    }
+//     &:active {
+//       transform: scale(0.95);
+//     }
+//   }
+// }
 
-    &:active {
-      transform: scale(0.95);
-    }
-  }
-}
-
-// 移动端适配：调小旋转按钮以防拥挤
-@media (max-width: 768px) {
-  :global(.glightbox-container) {
-    .grotate-btn {
-      top: 12px;
-      right: 60px;
-      padding: 5px 10px;
-      font-size: 11px;
-    }
-  }
-}
+// // 移动端适配：调小旋转按钮以防拥挤
+// @media (max-width: 768px) {
+//   :global(.glightbox-container) {
+//     .grotate-btn {
+//       top: 12px;
+//       right: 60px;
+//       padding: 5px 10px;
+//       font-size: 11px;
+//     }
+//   }
+// }
