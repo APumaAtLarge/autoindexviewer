@@ -39,7 +39,7 @@ export function switchVideo(url: string) {
     // ✨ 直接通过 Signal 将时间归零
     setPlaybackTime(0);
     instance.src = url;
-    instance.play().then(_applyMuted).catch(() => {});
+    instance.play().then(_applyMuted).catch(() => { });
     return;
   }
 
@@ -64,6 +64,8 @@ function _createPlayer(url: string) {
   // ✨ 获取初始播放时间（由于只在创建时读取一次，天然等同于 consume 的效果）
   const seekTo = playbackTime();
 
+  // ✨ 新增：判断是否为移动端
+  const isMobile = window.innerWidth <= 768;
   const config: any = {
     el: mountEl,
     url,
@@ -75,7 +77,8 @@ function _createPlayer(url: string) {
     lang: "zh-cn",
     playbackRate: [0.5, 0.75, 1, 1.25, 1.5, 2],
     pip: true,
-    cssFullscreen: true,
+    // ✨ 修改：移动端关闭网页全屏功能，强制只使用原生全屏
+    cssFullscreen: !isMobile,
     download: !isHls(),
   };
 
@@ -122,14 +125,14 @@ function _handleEnded() {
   if (mode === "single") {
     if (instance) {
       instance.currentTime = 0;
-      instance.play().catch(() => {});
+      instance.play().catch(() => { });
     }
     return;
   }
 
   const list = playlist();
-  const cur  = videoUrl();
-  const idx  = list.findIndex((i) => i.url === cur);
+  const cur = videoUrl();
+  const idx = list.findIndex((i) => i.url === cur);
 
   if (mode === "shuffle") {
     if (list.length <= 1) return;

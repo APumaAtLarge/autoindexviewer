@@ -17,10 +17,16 @@ import { SidebarSortBar } from "./components/SidebarSortBar";
 import { DirectoryList } from "./components/DirectoryList";
 import { PlaylistView } from "./components/PlaylistView";
 
+// interface SidebarProps {
+//   isOpen: boolean;
+//   isMobile: boolean;
+//   setIsOpen: (open: boolean) => void;
+// }
+
 interface SidebarProps {
-  isOpen: boolean;
-  isMobile: boolean;
-  setIsOpen: (open: boolean) => void;
+isOpen: () => boolean;
+isMobile: () => boolean;
+setIsOpen: (open: boolean) => void;
 }
 
 export const Sidebar = (props: SidebarProps) => {
@@ -80,7 +86,7 @@ export const Sidebar = (props: SidebarProps) => {
     /\.(mp4|m3u8|mkv|avi|mov|webm)$/i.test(url);
 
   const handleItemClick = (item: FileNode) => {
-    if (props.isMobile) props.setIsOpen(false);
+    if (props.isMobile()) props.setIsOpen(false);
 
     if (item.isDirectory) {
       window.history.pushState(null, "", item.url);
@@ -125,7 +131,7 @@ export const Sidebar = (props: SidebarProps) => {
 
   return (
     <>
-      <div classList={{ Sidebar: true, open: props.isOpen }}>
+      <div classList={{ Sidebar: true, open: props.isOpen() }}>
         <SidebarTabBar
           tabs={tabs}
           activeTab={activeTab()}
@@ -161,7 +167,7 @@ export const Sidebar = (props: SidebarProps) => {
         <Show when={activeTab() === "playlist"}>
           <PlaylistView
             currentUrl={currentUrl()}
-            isMobile={props.isMobile}
+            isMobile={props.isMobile()}
             setIsOpen={props.setIsOpen}
           />
         </Show>

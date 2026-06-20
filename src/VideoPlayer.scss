@@ -88,11 +88,65 @@
     position: absolute;
     inset: 0;
   }
+
+  /* ✨ 新增：修复 Firefox 等浏览器全屏时向下偏移的问题 */
+  &:fullscreen, &:-moz-full-screen, &:-webkit-full-screen {
+    position: fixed !important;
+    inset: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-height: none !important;
+    aspect-ratio: auto !important;
+    transform: none !important;
+  }
 }
 
+// @media (max-width: 768px) {
+//   .VideoPlayer .player-wrapper {
+//     max-height: none;
+//     border-radius: 0;
+//   }
+// }
+
+
+// /* 🌟 新增：移动端横屏，用视口高度判断而非宽度
+//    宽度判断在大屏手机横屏下会失效（如 iPhone Pro Max 横屏宽度 > 768px） */
+// @media (max-height: 500px) and (orientation: landscape) {
+//   .VideoPlayer {
+//     .header {
+//       margin-bottom: 6px; /* 横屏时进一步压缩标题栏占用 */
+//     }
+
+//     .player-wrapper {
+//       border-radius: 0;
+//       /* header(56px) + 播放器自身标题栏(约40px) + player 三者之和 ≤ 100vh */
+//       max-height: calc(100vh - var(--app-header-h, 56px) - 40px);
+//       max-height: calc(100dvh - var(--app-header-h, 56px) - 40px);
+//     }
+//   }
+// }
+
 @media (max-width: 768px) {
-  .VideoPlayer .player-wrapper {
-    max-height: none;
-    border-radius: 0;
+.VideoPlayer .player-wrapper {
+  max-height: none;
+  border-radius: 0;
+}
+}
+
+/* 🌟 移动端横屏：用视口高度判断而非宽度
+ （宽度判断在大屏手机横屏下会失效，如 iPhone Pro Max 横屏宽度 > 768px） */
+@media (max-height: 500px) and (orientation: landscape) {
+.VideoPlayer {
+  .header {
+    margin-bottom: 6px;
   }
+
+  .player-wrapper {
+    border-radius: 0;
+    transition: max-height 0.25s ease; /* 🌟 与 header 收起动画同步 */
+    /* header(变量，56px 或折叠后 0px) + 播放器标题栏(约40px) + player ≤ 100vh */
+    max-height: calc(100vh - var(--app-header-h, 56px) - 40px);
+    max-height: calc(100dvh - var(--app-header-h, 56px) - 40px);
+  }
+}
 }

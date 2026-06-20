@@ -10,7 +10,7 @@ export default defineConfig({
       userscript: {
         icon: 'https://vitejs.dev/logo.svg',
         namespace: 'npm/vite-plugin-monkey',
-        match: ['http://10.0.0.137:44433/data/*'],
+        match: ['http://10.0.0.137:44433/*'],
       },
     }),
     solidPlugin(), // 🌟 必须加上这个插件，用来编译 Solid 的 JSX

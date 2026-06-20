@@ -179,3 +179,49 @@
 //     }
 //   }
 // }
+
+/* src/DirectoryGrid.scss 的末尾 */
+
+/* 去掉 :global，直接写类名，因为当前文件本身就是全局作用域 */
+.glightbox-container {
+  .grotate-btn {
+    position: absolute;
+    top: 15px;
+    right: 70px; /* 紧贴在原生关闭按钮左侧 */
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    z-index: 999999; /* 确保在遮罩层最上方 */
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.8);
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .glightbox-container {
+    .grotate-btn {
+      top: 12px;
+      right: 60px;
+      padding: 5px 10px;
+      font-size: 11px;
+    }
+  }
+}
