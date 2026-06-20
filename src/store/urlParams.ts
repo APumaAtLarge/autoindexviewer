@@ -37,26 +37,50 @@ export const [playbackTime, setPlaybackTime] = createSignal<number>(_getInitialT
 
 // ✨ 统一管理：一个 Effect 负责同步所有 URL 参数
 createRoot(() => {
-  createEffect(() => {
-    const url = videoUrl();
-    const time = playbackTime();
+createEffect(() => {
+  const url = videoUrl();
+  const time = playbackTime();
 
-    try {
-      const u = new URL(window.location.href);
+  try {
+    const u = new URL(window.location.href);
 
-      // // 同步视频 URL 参数
-      // if (url) {
-      //   u.searchParams.set(VIDEO_PARAM, url);
-      // } else {
-      //   u.searchParams.delete(VIDEO_PARAM);
-      // }
-
-      // 同步时间参数
+    if (url) {
+      // Player 显示时
+      u.searchParams.set(VIDEO_PARAM, url);
       u.searchParams.set(TIME_PARAM, String(time));
-
-      history.replaceState(history.state, "", u.toString());
-    } catch (err) {
-      console.error("同步 URL 参数失败:", err);
+    } else {
+      // Player 隐藏时
+      u.searchParams.delete(VIDEO_PARAM);
+      u.searchParams.delete(TIME_PARAM);
     }
-  });
+
+    history.replaceState(history.state, "", u.toString());
+  } catch (err) {
+    console.error("同步 URL 参数失败:", err);
+  }
 });
+});
+// createRoot(() => {
+//   createEffect(() => {
+//     const url = videoUrl();
+//     const time = playbackTime();
+
+//     try {
+//       const u = new URL(window.location.href);
+
+//       // // 同步视频 URL 参数
+//       // if (url) {
+//       //   u.searchParams.set(VIDEO_PARAM, url);
+//       // } else {
+//       //   u.searchParams.delete(VIDEO_PARAM);
+//       // }
+
+//       // 同步时间参数
+//       u.searchParams.set(TIME_PARAM, String(time));
+
+//       history.replaceState(history.state, "", u.toString());
+//     } catch (err) {
+//       console.error("同步 URL 参数失败:", err);
+//     }
+//   });
+// });

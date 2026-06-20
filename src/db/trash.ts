@@ -46,3 +46,8 @@ export async function getTrashedUrls(dirUri: string): Promise<Set<string>> {
   const records = await db.trash.where("dirUri").equals(dirUri).toArray();
   return new Set(records.map((r) => r.fileUrl));
 }
+
+/** 获取所有被删除的记录（按删除时间倒序，用于主页展示） */
+export async function getAllTrashRecords(): Promise<TrashRecord[]> {
+  return await db.trash.orderBy("deletedAt").reverse().toArray();
+}

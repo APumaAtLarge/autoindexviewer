@@ -1,85 +1,33 @@
+
 // src/Sidebar.tsx
-import { createSignal, onMount, Show } from "solid-js";
+import { onMount, Show } from "solid-js";
 import { type FileNode } from "./utils/parser";
 import { videoUrl, setVideoUrl } from "./store/urlParams";
 import { navigateDir } from "./store/browseDir";
-import { fetchDirectory } from "./api/directory";
-import { sortItems, type SortMode } from "./utils/sort";
+import { sortItems } from "./utils/sort";
 import "./Sidebar.scss";
 
 // 引入拆分的子组件
-import {
-  SidebarTabBar,
-  type TabId,
-  type TabOption,
-} from "./components/SidebarTabBar";
-import { SidebarSortBar } from "./components/SidebarSortBar";
-import { DirectoryList } from "./components/DirectoryList";
-import { PlaylistView } from "./components/PlaylistView";
+import { SidebarTabBar } from "./components/sidebar/SidebarTabBar";
+import { SidebarSortBar } from "./components/sidebar/SidebarSortBar";
+import { DirectoryList } from "./components/sidebar/DirectoryList";
+import { PlaylistView } from "./components/sidebar/PlaylistView";
 
-// interface SidebarProps {
-//   isOpen: boolean;
-//   isMobile: boolean;
-//   setIsOpen: (open: boolean) => void;
-// }
+// 引入统一的状态库
+import { activeTab, setActiveTab, sortMode, isPinned } from "./store/sidebarUI";
+import {
+  currentUrl, setCurrentUrl, fetchCurrent, fetchParent,
+  currentItems, currentLoading, currentError,
+  parentItems, parentLoading, parentError, setParentItems, setParentFetched
+} from "./store/directory";
 
 interface SidebarProps {
-isOpen: () => boolean;
-isMobile: () => boolean;
-setIsOpen: (open: boolean) => void;
+  isOpen: () => boolean;
+  isMobile: () => boolean;
+  setIsOpen: (open: boolean) => void;
 }
 
 export const Sidebar = (props: SidebarProps) => {
-  const [activeTab, setActiveTab] = createSignal<TabId>("current");
-  const [sortMode, setSortMode] = createSignal<SortMode>("name");
-
-  const [currentUrl, setCurrentUrl] = createSignal<string>(
-    new URL(".", window.location.href).href,
-  );
-
-  const parentUrl = () => {
-    const url = new URL(currentUrl());
-    if (url.pathname === "/" || url.pathname === "") return null;
-    return new URL("../", url.href).href;
-  };
-
-  const [currentItems, setCurrentItems] = createSignal<FileNode[]>([]);
-  const [currentLoading, setCurrentLoading] = createSignal<boolean>(true);
-  const [currentError, setCurrentError] = createSignal<string | null>(null);
-
-  const [parentItems, setParentItems] = createSignal<FileNode[]>([]);
-  const [parentLoading, setParentLoading] = createSignal<boolean>(false);
-  const [parentError, setParentError] = createSignal<string | null>(null);
-  const [parentFetched, setParentFetched] = createSignal<boolean>(false);
-
-  const fetchItems = async (
-    targetUrl: string,
-    setLoading: (v: boolean) => void,
-    setError: (v: string | null) => void,
-    setItems: (v: FileNode[]) => void,
-  ) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { items } = await fetchDirectory(targetUrl);
-      setItems(items);
-    } catch (err: any) {
-      setError(err.message || "未知错误");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchCurrent = (url: string) =>
-    fetchItems(url, setCurrentLoading, setCurrentError, setCurrentItems);
-
-  const fetchParent = () => {
-    const p = parentUrl();
-    if (!p) return;
-    setParentFetched(true);
-    fetchItems(p, setParentLoading, setParentError, setParentItems);
-  };
-
   onMount(() => fetchCurrent(currentUrl()));
 
   const isVideoFile = (url: string) =>
@@ -95,7 +43,13 @@ export const Sidebar = (props: SidebarProps) => {
       setParentFetched(false);
       setParentItems([]);
       fetchCurrent(item.url);
-      setActiveTab("current");
+
+      // 根据缓存的 Pin 状态决定是否跳转 Tab
+      if (isPinned()) {
+        if (activeTab() === "parent") fetchParent();
+      } else {
+        setActiveTab("current");
+      }
     } else if (isVideoFile(item.url)) {
       setVideoUrl(item.url);
       window.history.pushState(null, "", item.url);
@@ -104,42 +58,18 @@ export const Sidebar = (props: SidebarProps) => {
     }
   };
 
-  const handleTabChange = (tab: TabId) => {
-    setActiveTab(tab);
-    if (tab === "parent" && !parentFetched()) fetchParent();
-  };
-
-  const dirName = (url: string) => {
-    const path = new URL(url).pathname.replace(/\/$/, "");
-    const parts = path.split("/").filter(Boolean);
-    return parts.length > 0 ? parts[parts.length - 1] : "/";
-  };
-
-  const tabs: TabOption[] = [
-    { id: "current", label: () => dirName(currentUrl()), icon: "📂" },
-    {
-      id: "parent",
-      label: () => (parentUrl() ? dirName(parentUrl()!) : "上级目录"),
-      icon: "⬆️",
-      disabled: () => !parentUrl(),
-    },
-    { id: "playlist", label: () => "播放列表", icon: "▶️" },
-  ];
-
   const sortedCurrent = () => sortItems(currentItems(), sortMode());
   const sortedParent = () => sortItems(parentItems(), sortMode());
 
   return (
     <>
       <div classList={{ Sidebar: true, open: props.isOpen() }}>
-        <SidebarTabBar
-          tabs={tabs}
-          activeTab={activeTab()}
-          onTabChange={handleTabChange}
-        />
+        {/* 0 Props, 干净利落 */}
+        <SidebarTabBar />
 
         <Show when={activeTab() !== "playlist"}>
-          <SidebarSortBar sortMode={sortMode()} setSortMode={setSortMode} />
+          {/* 0 Props, 干净利落 */}
+          <SidebarSortBar />
         </Show>
 
         <Show when={activeTab() === "current"}>
@@ -148,7 +78,6 @@ export const Sidebar = (props: SidebarProps) => {
             loading={currentLoading()}
             error={currentError()}
             currentUrl={currentUrl()}
-            videoUrl={videoUrl()}
             onItemClick={handleItemClick}
           />
         </Show>
@@ -159,14 +88,12 @@ export const Sidebar = (props: SidebarProps) => {
             loading={parentLoading()}
             error={parentError()}
             currentUrl={currentUrl()}
-            videoUrl={videoUrl()}
             onItemClick={handleItemClick}
           />
         </Show>
 
         <Show when={activeTab() === "playlist"}>
           <PlaylistView
-            currentUrl={currentUrl()}
             isMobile={props.isMobile()}
             setIsOpen={props.setIsOpen}
           />

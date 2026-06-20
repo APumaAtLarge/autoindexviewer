@@ -1,13 +1,13 @@
 // src/components/DirectoryList.tsx
 import { For, Show } from "solid-js";
-import type { FileNode } from "../utils/parser";
-
+import type { FileNode } from "../../utils/parser";
+import { videoUrl } from "../../store/urlParams";
+import './DirectoryList.scss'
 interface DirectoryListProps {
   items: FileNode[];
   loading: boolean;
   error: string | null;
   currentUrl: string;
-  videoUrl: string;
   onItemClick: (item: FileNode) => void;
 }
 
@@ -33,7 +33,7 @@ export const DirectoryList = (props: DirectoryListProps) => {
                   file: !item.isDirectory,
                   active: item.isDirectory
                     ? props.currentUrl === item.url
-                    : props.videoUrl === item.url,
+                    : videoUrl() === item.url, // ✨ 这里直接使用 store
                 }}
                 onClick={() => props.onItemClick(item)}
                 title={item.name}

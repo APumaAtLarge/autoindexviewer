@@ -1,6 +1,6 @@
 // src/utils/trashInterceptor.ts
 import type { Interceptor } from "./interceptors";
-import { getTrashedUrls } from "../db";
+import { getTrashedUrls } from "../db/trash";
 
 export const trashInterceptor: Interceptor = {
   name: "trash",

@@ -1,0 +1,20 @@
+
+.sort-bar {
+display: flex; align-items: center;
+gap: 4px; padding: 5px 12px;
+border-bottom: 1px solid #ebebeb;
+background-color: #f7f7f7;
+flex-shrink: 0;
+}
+
+.sort-label { font-size: 11px; color: #aaa; margin-right: 2px; }
+
+.sort-btn {
+padding: 2px 10px; font-size: 11px; font-family: inherit;
+border: 1px solid #e0e0e0; border-radius: 20px;
+background: #fff; color: #666; cursor: pointer;
+transition: all 0.15s;
+
+&:hover { color: #4f66ff; border-color: #c5cfff; background: #f0f4ff; }
+&.active { color: #4f66ff; border-color: #4f66ff; background: #e8edff; font-weight: 600; }
+}

@@ -4,7 +4,9 @@ import { createEffect, onMount, onCleanup, Show, createSignal } from "solid-js";
 import { videoUrl, isHls } from "./store/urlParams";
 // ✨ 引入 pausePlayer
 import { mountPlayer, unmountPlayer, switchVideo, pausePlayer } from "./player";
-import { trashFile } from "./db"; 
+import { trashFile } from "./db/trash"; 
+// ✨ 引入封装好的 API
+import { apiDeleteFile } from "./api/trash";
 import "./VideoPlayer.scss";
 import toast from "./ui/toast";
 
@@ -61,7 +63,9 @@ export function VideoPlayer() {
     if (!isConfirmed) return; 
 
     try {
-      await trashFile(dirUri, currentUrl, fileName);
+      // await trashFile(dirUri, currentUrl, fileName);
+      // ✨ 直接调用 API 函数，没有延迟
+      await apiDeleteFile(dirUri, currentUrl, fileName);
       toast.success(`已将 "${fileName}" 移入垃圾桶`);
     } catch (err) {
       console.error("删除失败", err);
