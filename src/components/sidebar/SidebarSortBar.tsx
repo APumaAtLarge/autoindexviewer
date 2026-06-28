@@ -1,8 +1,9 @@
-// src/components/SidebarSortBar.tsx
+// src/components/sidebar/SidebarSortBar.tsx
 import { For } from "solid-js";
 import { sortMode, setSortMode, isPinned, setIsPinned } from "../../store/sidebarUI";
 import type { SortMode } from "../../utils/sort";
-import './SidebarSortBar.scss'
+import "./SidebarSortBar.scss";
+
 const SORT_OPTIONS: { mode: SortMode; label: string }[] = [
   { mode: "name", label: "名称" },
   { mode: "date", label: "时间" },

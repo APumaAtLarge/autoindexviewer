@@ -1,12 +1,14 @@
-// src/components/PlaylistView.tsx
+
+// src/components/sidebar/PlaylistView.tsx
 import { createSignal, For, Show } from "solid-js";
 import { playlist, setPlaylist } from "../../store/playlist";
 import { playMode, setPlayMode, type PlayMode } from "../../store/playMode";
 import { videoUrl, setVideoUrl } from "../../store/urlParams";
-import { currentUrl } from "../../store/directory"; // ✨ 新增 import
+import { currentUrl } from "../../store/urlPath"; // ✨ 修改：引入统一的 urlPath 状态源
 import { addFolderToPlaylist, removeFromPlaylist } from "../../playlist";
 import toast from "../../ui/toast";
 import './PlaylistView.scss'
+
 const PLAY_MODE_OPTIONS: { mode: PlayMode; icon: string; title: string }[] = [
   { mode: "normal", icon: "➡️", title: "顺序播放" },
   { mode: "list", icon: "🔁", title: "列表循环" },
@@ -15,7 +17,6 @@ const PLAY_MODE_OPTIONS: { mode: PlayMode; icon: string; title: string }[] = [
 ];
 
 interface PlaylistViewProps {
-  // currentUrl: string;
   isMobile: boolean;
   setIsOpen: (open: boolean) => void;
 }
@@ -26,6 +27,7 @@ export const PlaylistView = (props: PlaylistViewProps) => {
   const handleAddFolder = async () => {
     setFolderLoading(true);
     try {
+      // 使用统一的全局当前路径 currentUrl()
       const count = await addFolderToPlaylist(currentUrl());
       if (count > 0) {
         toast.success(`已添加 ${count} 个视频到播放列表`);
@@ -101,43 +103,6 @@ export const PlaylistView = (props: PlaylistViewProps) => {
           </div>
         }
       >
-        {/* <ul class="list playlist-list">
-          <For each={playlist()}>
-            {(item, idx) => (
-              <li
-                classList={{
-                  item: true,
-                  file: true,
-                  active: videoUrl() === item.url,
-                }}
-                title={item.name}
-              >
-                <span class="playlist-index">{idx() + 1}</span>
-                <span
-                  class="name"
-                  onClick={() => {
-                    setVideoUrl(item.url);
-                    if (props.isMobile) props.setIsOpen(false);
-                  }}
-                >
-                  {item.name}
-                </span>
-                <button
-                  class="playlist-remove"
-                  title="从列表移除"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeFromPlaylist(item.url);
-                  }}
-                >
-                  ✕
-                </button>
-              </li>
-            )}
-          </For>
-        </ul> */}
-
-        // src/components/PlaylistView.tsx 中修改列表渲染部分
         <ul class="list playlist-list">
           <For each={playlist()}>
             {(item, idx) => (
@@ -148,7 +113,6 @@ export const PlaylistView = (props: PlaylistViewProps) => {
                   active: videoUrl() === item.url,
                 }}
                 title={item.name}
-                /* ✨ 1. 点击事件提到整行 */
                 onClick={() => {
                   setVideoUrl(item.url);
                   if (props.isMobile) props.setIsOpen(false);
@@ -156,7 +120,6 @@ export const PlaylistView = (props: PlaylistViewProps) => {
               >
                 <span class="playlist-index">{idx() + 1}</span>
                 
-                {/* ✨ 2. 这里纯展示文字，移除了原来的 onClick */}
                 <span class="name">
                   {item.name}
                 </span>
@@ -165,8 +128,7 @@ export const PlaylistView = (props: PlaylistViewProps) => {
                   class="playlist-remove"
                   title="从列表移除"
                   onClick={(e) => {
-                    /* ✨ 3. 关键：必须阻止冒泡！否则点击删除会同时触发 li 的播放事件 */
-                    e.stopPropagation();
+                    e.stopPropagation(); // 阻止事件冒泡到整行 li
                     removeFromPlaylist(item.url);
                   }}
                 >

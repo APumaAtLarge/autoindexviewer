@@ -2,7 +2,7 @@
 import { onMount, Show } from "solid-js";
 import { type FileNode } from "./utils/parser";
 import { videoUrl, setVideoUrl } from "./store/urlParams";
-import { navigateDir } from "./store/browseDir";
+import { navigateToDir, currentUrl } from "./store/urlPath"; // 👈 引入新网关
 import "./Sidebar.scss";
 
 import { SidebarTabBar } from "./components/sidebar/SidebarTabBar";
@@ -12,10 +12,7 @@ import { PlaylistView } from "./components/sidebar/PlaylistView";
 
 import { activeTab, setActiveTab, isPinned } from "./store/sidebarUI";
 import {
-  currentUrl,
-  setCurrentUrl,
   fetchCurrent,
-  fetchParent,
   sortedCurrentItems,
   sortedParentItems,
   currentLoading,
@@ -41,13 +38,10 @@ export const Sidebar = (props: SidebarProps) => {
     if (props.isMobile()) props.setIsOpen(false);
 
     if (item.isDirectory) {
-      navigateDir(item.url);
-      setCurrentUrl(item.url);
-      fetchCurrent(item.url);
+      // ✨ 职责分离：点击后只负责更新 URL 触发流
+      navigateToDir(item.url);
 
-      if (isPinned()) {
-        // if (activeTab() === "parent") fetchParent();
-      } else {
+      if (!isPinned()) {
         setActiveTab("current");
         setParentItems([]);
       }

@@ -5,8 +5,8 @@ import { type FileNode } from "../utils/parser";
 import { isImageUrl } from "../utils/isImage";
 import { fetchDirectory } from "../api/directory";
 import { navigateDir } from "../store/browseDir";
-import { setCurrentUrl, fetchCurrent, fetchParent, parentFetched, sortedSiblingDirs } from "../store/directory";
-
+import { fetchCurrent, fetchParent, parentFetched, sortedSiblingDirs } from "../store/directory";
+import { setCurrentUrl, navigateToDir } from "../store/urlPath";
 let lightbox: PhotoSwipeLightbox | null = null;
 
 async function fetchDirImages(dirUrl: string): Promise<FileNode[]> {
@@ -161,10 +161,8 @@ export async function openDirectoryLightbox(
 
   lightbox.on("close", () => {
     const targetDir = dirOfImage(lastSrc);
-    window.history.replaceState(null, "", targetDir);
-    setCurrentUrl(targetDir);
-    fetchCurrent(targetDir);
-    navigateDir(targetDir);
+    // ✨ 统一调用统一网关关闭灯箱，此时侧边栏和主视图将自动同步回目标目录的数据
+    navigateToDir(targetDir);
   });
 
   lightbox.loadAndOpen(startIndex);

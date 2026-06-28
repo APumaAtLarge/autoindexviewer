@@ -1,9 +1,10 @@
-// src/components/SidebarTabBar.tsx
+// src/components/sidebar/SidebarTabBar.tsx
 import { For } from "solid-js";
 import { activeTab, setActiveTab, type TabId } from "../../store/sidebarUI";
-import { currentUrl, parentUrl, parentFetched, fetchParent } from "../../store/directory";
-import './SidebarTabBar.scss';
-// ✨ 加回类型定义，指明 disabled 是可选的 (?)
+import { parentFetched, fetchParent } from "../../store/directory";
+import { currentUrl, parentUrl } from "../../store/urlPath"; // ✨ 统一从 urlPath 导入
+import "./SidebarTabBar.scss";
+
 interface TabOption {
   id: TabId;
   label: () => string;
@@ -18,12 +19,15 @@ export const SidebarTabBar = () => {
   };
 
   const dirName = (url: string) => {
-    const path = new URL(url).pathname.replace(/\/$/, "");
-    const parts = path.split("/").filter(Boolean);
-    return parts.length > 0 ? parts[parts.length - 1] : "/";
+    try {
+      const path = new URL(url).pathname.replace(/\/$/, "");
+      const parts = path.split("/").filter(Boolean);
+      return parts.length > 0 ? parts[parts.length - 1] : "/";
+    } catch {
+      return "/";
+    }
   };
 
-  // ✨ 明确声明类型为 TabOption[]，去掉 as const
   const tabs: TabOption[] = [
     { id: "current", label: () => dirName(currentUrl()), icon: "📂" },
     {

@@ -1,5 +1,4 @@
 /* src/DirectoryGrid.scss */
-/* .file-grid 已移除：列数/gap 现在由虚拟化层的 inline style 控制 */
 
 .dir-title {
   font-size: 22px;
@@ -8,101 +7,6 @@
   padding-bottom: 12px;
   border-bottom: 2px solid #eaeaea;
   flex-shrink: 0;
-}
-
-.file-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  border: 1px solid #222;
-  border-radius: 12px;
-  text-decoration: none;
-  color: #333;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  overflow: hidden;
-  padding: 0;
-  position: relative;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-    border-color: #4f66ff;
-  }
-
-  &.is-dir {
-    background: #fafbff;
-  }
-
-  .cover-wrapper {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background-color: #1a1a1a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .cover-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .icon {
-    font-size: 40px;
-    margin: 0;
-  }
-
-  .name {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    font-size: 13px;
-    text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #fff;
-    padding: 20px 10px 8px;
-    box-sizing: border-box;
-    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.65) 100%);
-    z-index: 1;
-  }
-
-  .file-meta {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 10px 6px;
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.75);
-    box-sizing: border-box;
-    z-index: 1;
-  }
-
-  &:has(.file-meta) .name {
-    padding-bottom: 22px;
-  }
-}
-
-/* 移动端卡片内部字体缩小 */
-@media (max-width: 768px) {
-  .file-card {
-    border-radius: 8px;
-
-    .icon { font-size: 28px; }
-    .name { font-size: 12px; padding: 16px 8px 6px; }
-    .file-meta { font-size: 10px; padding: 0 8px 5px; }
-  }
 }
 
 /* GLightbox 容器样式保持不变 */

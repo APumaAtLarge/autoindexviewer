@@ -46,11 +46,11 @@ createEffect(() => {
 
     if (url) {
       // Player 显示时
-      u.searchParams.set(VIDEO_PARAM, url);
+      // u.searchParams.set(VIDEO_PARAM, url);
       u.searchParams.set(TIME_PARAM, String(time));
     } else {
       // Player 隐藏时
-      u.searchParams.delete(VIDEO_PARAM);
+      // u.searchParams.delete(VIDEO_PARAM);
       u.searchParams.delete(TIME_PARAM);
     }
 

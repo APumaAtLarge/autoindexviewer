@@ -10,7 +10,7 @@ export interface FileNode {
   url: string;
   isDirectory: boolean;
   metadata?: FileMetadata;
-  cover?: string; 
+  cover?: string; // 保留可选字段，以防未来有些 API 自带封面下发
 }
 
 export interface ParseResult {
@@ -52,12 +52,9 @@ export function parseNginxHtml(htmlText: string, baseUrl: string = window.locati
     }
 
     let metadata: FileMetadata | undefined = undefined;
-    let cover: string | undefined = undefined;
 
-    // 🌟 生成封面探测地址与解析元数据
-    if (isDirectory) {
-      cover = new URL("cover.jpg", absoluteUrl).href;
-    } else {
+    // 🌟 解析元数据
+    if (!isDirectory) {
       const nextNode = link.nextSibling;
       if (nextNode && nextNode.nodeType === 3) {
         const text = nextNode.textContent?.trim() || "";
@@ -71,10 +68,6 @@ export function parseNginxHtml(htmlText: string, baseUrl: string = window.locati
           }
         }
       }
-
-      if (/\.(mp4|m3u8|mkv|avi)$/i.test(name)) {
-        cover = absoluteUrl.replace(/\.[^/.]+$/, ".jpg");
-      }
     }
 
     // 压入最终数组
@@ -83,15 +76,12 @@ export function parseNginxHtml(htmlText: string, baseUrl: string = window.locati
       url: absoluteUrl,
       isDirectory,
       ...(metadata ? { metadata } : {}),
-      ...(cover ? { cover } : {}),
     });
   });
 
   return { title, items };
 }
 
-
-// src/utils/parser.ts 末尾追加（替换上面那段）
 
 // ── 拦截器集成 ────────────────────────────────────────────
 export { applyInterceptors, registerInterceptor, unregisterInterceptor } from "./interceptors";
@@ -109,78 +99,68 @@ export async function parseAndFilter(
 
 
 export interface NginxJsonItem {
-name: string;
-type: "file" | "directory";
-mtime?: string;
-size?: number;
+  name: string;
+  type: "file" | "directory";
+  mtime?: string;
+  size?: number;
 }
 
 /**
-* 解析 autoindex JSON API
-*
-* API:
-*   /api/Movies/
-*
-* 实际文件:
-*   /Movies/
-*/
+ * 解析 autoindex JSON API
+ *
+ * API:
+ * /api/Movies/
+ *
+ * 实际文件:
+ * /Movies/
+ */
 export function parseNginxJson(
-jsonText: string,
-apiUrl: string = window.location.href
+  jsonText: string,
+  apiUrl: string = window.location.href
 ): ParseResult {
-const data = JSON.parse(jsonText) as NginxJsonItem[];
+  const data = JSON.parse(jsonText) as NginxJsonItem[];
 
-// /api/... -> /...
-const baseUrl = apiUrl.replace(/\/api(?=\/|$)/, "");
+  // /api/... -> /...
+  const baseUrl = apiUrl.replace(/\/api(?=\/|$)/, "");
 
-// 当前目录标题
-const pathname = new URL(baseUrl).pathname;
-const title =
-  decodeURIComponent(pathname.replace(/\/$/, "").split("/").pop() || "/");
+  // 当前目录标题
+  const pathname = new URL(baseUrl).pathname;
+  const title =
+    decodeURIComponent(pathname.replace(/\/$/, "").split("/").pop() || "/");
 
-const items: FileNode[] = data.map((item) => {
-  const isDirectory = item.type === "directory";
+  const items: FileNode[] = data.map((item) => {
+    const isDirectory = item.type === "directory";
 
-  let url: string;
+    let url: string;
 
-  if (isDirectory) {
-    // 目录继续走 API
-    url = new URL(
-      `api/${encodeURIComponent(item.name)}/`,
-      baseUrl.endsWith("/") ? baseUrl : baseUrl + "/"
-    ).href;
-  } else {
-    // 文件走真实路径
-    url = new URL(
-      encodeURIComponent(item.name),
-      baseUrl.endsWith("/") ? baseUrl : baseUrl + "/"
-    ).href;
-  }
+    if (isDirectory) {
+      // 目录继续走 API
+      url = new URL(
+        `api/${encodeURIComponent(item.name)}/`,
+        baseUrl.endsWith("/") ? baseUrl : baseUrl + "/"
+      ).href;
+    } else {
+      // 文件走真实路径
+      url = new URL(
+        encodeURIComponent(item.name),
+        baseUrl.endsWith("/") ? baseUrl : baseUrl + "/"
+      ).href;
+    }
 
-  let cover: string | undefined;
+    return {
+      name: item.name,
+      url,
+      isDirectory,
+      ...(item.mtime
+        ? {
+            metadata: {
+              date: item.mtime,
+              size: item.size != null ? String(item.size) : "",
+            },
+          }
+        : {}),
+    };
+  });
 
-  if (isDirectory) {
-    cover = new URL("cover.jpg", url.replace(/\/api\//, "/")).href;
-  } else if (/\.(mp4|mkv|avi|m3u8)$/i.test(item.name)) {
-    cover = url.replace(/\.[^/.]+$/, ".jpg");
-  }
-
-  return {
-    name: item.name,
-    url,
-    isDirectory,
-    ...(item.mtime
-      ? {
-          metadata: {
-            date: item.mtime,
-            size:
-              item.size != null ? String(item.size) : "",
-          },
-        }
-      : {}),
-    ...(cover ? { cover } : {}),
-  };
-});
-
-return { title, items };
+  return { title, items };
 }

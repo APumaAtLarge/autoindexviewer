@@ -1,8 +1,9 @@
-// src/components/DirectoryList.tsx
+// src/components/sidebar/DirectoryList.tsx
 import { For, Show } from "solid-js";
 import type { FileNode } from "../../utils/parser";
 import { videoUrl } from "../../store/urlParams";
-import './DirectoryList.scss'
+import "./DirectoryList.scss";
+
 interface DirectoryListProps {
   items: FileNode[];
   loading: boolean;
@@ -33,7 +34,7 @@ export const DirectoryList = (props: DirectoryListProps) => {
                   file: !item.isDirectory,
                   active: item.isDirectory
                     ? props.currentUrl === item.url
-                    : videoUrl() === item.url, // ✨ 这里直接使用 store
+                    : videoUrl() === item.url,
                 }}
                 onClick={() => props.onItemClick(item)}
                 title={item.name}

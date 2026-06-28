@@ -2,8 +2,8 @@
 import { createSignal, onMount, onCleanup, createEffect, Show } from "solid-js";
 import { type FileNode } from "./utils/parser";
 import { fetchDirectory } from "./api/directory";
-import { browseDir, navigateDir } from "./store/browseDir";
 import { setVideoUrl, setIsHls } from "./store/urlParams";
+import { currentUrl, navigateToDir } from "./store/urlPath";
 import { DirectoryGrid } from "./DirectoryGrid";
 import "./DirectoryView.scss";
 
@@ -32,21 +32,21 @@ export function DirectoryView() {
   };
 
   onMount(() => {
-    if (!browseDir()) loadDirectory(window.location.href);
-    const onPopState = () => loadDirectory(window.location.href);
+    const onPopState = () => {
+      navigateToDir(window.location.href);
+    };
     window.addEventListener("popstate", onPopState);
     onCleanup(() => window.removeEventListener("popstate", onPopState));
   });
 
+  // 当全局统一管理的路径状态 currentUrl 改变，自动触发重载
   createEffect(() => {
-    const payload = browseDir();
-    if (payload) loadDirectory(payload.url);
+    loadDirectory(currentUrl());
   });
 
   const handleCardClick = (_e: MouseEvent, file: FileNode) => {
     if (file.isDirectory) {
-      window.history.pushState(null, "", file.url);
-      navigateDir(file.url);
+      navigateToDir(file.url);
     } else if (isVideoFile(file.url)) {
       const isM3u8 = /\.m3u8$/i.test(file.url);
       setIsHls(isM3u8);
@@ -64,7 +64,7 @@ export function DirectoryView() {
         <DirectoryGrid
           title={title()}
           files={files()}
-          currentUrl={window.location.href}
+          currentUrl={currentUrl()}
           onCardClick={handleCardClick}
         />
       </Show>
