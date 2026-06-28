@@ -80,6 +80,7 @@ function _createPlayer(url: string) {
     // ✨ 修改：移动端关闭网页全屏功能，强制只使用原生全屏
     cssFullscreen: !isMobile,
     download: !isHls(),
+
   };
 
   if (isHls()) config.plugins = [HlsPlugin];

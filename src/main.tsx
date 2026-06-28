@@ -8,7 +8,8 @@ import { registerInterceptor } from "./utils/interceptors";
 import { trashInterceptor }    from "./utils/trashInterceptor";
 
 registerInterceptor(trashInterceptor);
-
+// main.tsx 顶部
+history.scrollRestoration = "manual";
 function initPlugin() {
   const currentUrl = window.location.href;
   const isMp4 = /\.mp4(?:\?.*)?$/i.test(currentUrl);

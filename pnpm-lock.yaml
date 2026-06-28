@@ -8,12 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@tanstack/solid-virtual':
+        specifier: ^3.13.30
+        version: 3.13.30(solid-js@1.9.13)
       dexie:
         specifier: ^4.4.3
         version: 4.4.3
-      glightbox:
-        specifier: ^3.3.1
-        version: 3.3.1
+      photoswipe:
+        specifier: ^5.4.4
+        version: 5.4.4
       solid-js:
         specifier: ^1.9.13
         version: 1.9.13
@@ -485,6 +488,14 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@tanstack/solid-virtual@3.13.30':
+    resolution: {integrity: sha512-Uggj9Ie4psxQLFfZ9FmTKsKkXVNRUQBIc6ucKnW8l/zA2fR5Q+lInzsqoOw0OjIhLlBgxI767kxS2dj82CX65g==}
+    peerDependencies:
+      solid-js: ^1.3.0
+
+  '@tanstack/virtual-core@3.17.2':
+    resolution: {integrity: sha512-w43MvWvmShpb6kIC9MOoLyUkLmRTLPjt61bHWs+X29hACSpX+n8DvgZ3qM7cUfflKlRRcHR9KVJE6TmcqnQvcA==}
+
   '@tybys/wasm-util@0.10.2':
     resolution: {integrity: sha512-RoBvJ2X0wuKlWFIjrwffGw1IqZHKQqzIchKaadZZfnNpsAYp2mM0h36JtPCjNDAHGgYez/15uMBpfGwchhiMgg==}
 
@@ -691,9 +702,6 @@ packages:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}
     engines: {node: '>=6.9.0'}
 
-  glightbox@3.3.1:
-    resolution: {integrity: sha512-nXoKfJRnQTDaAFAw5799hjpfAAHx5aLvOLG0SIGudeMCwtHgO3P2/avNYapJ+SL4UEZxO2YNBPtq6pzMhSx42g==}
-
   html-entities@2.3.3:
     resolution: {integrity: sha512-DV5Ln36z34NNTDgnz0EWGBLZENelNAtkiFA4kyNOG2tDI6Mz1uSWiq1wAKdyjnJwyDiDO7Fa2SO1CTxPXL8VxA==}
 
@@ -881,6 +889,10 @@ packages:
   path-key@3.1.1:
     resolution: {integrity: sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==}
     engines: {node: '>=8'}
+
+  photoswipe@5.4.4:
+    resolution: {integrity: sha512-WNFHoKrkZNnvFFhbHL93WDkW3ifwVOXSW3w1UuZZelSmgXpIGiZSNlZJq37rR8YejqME2rHs9EhH9ZvlvFH2NA==}
+    engines: {node: '>= 0.12.0'}
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
@@ -1440,6 +1452,13 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.61.1':
     optional: true
 
+  '@tanstack/solid-virtual@3.13.30(solid-js@1.9.13)':
+    dependencies:
+      '@tanstack/virtual-core': 3.17.2
+      solid-js: 1.9.13
+
+  '@tanstack/virtual-core@3.17.2': {}
+
   '@tybys/wasm-util@0.10.2':
     dependencies:
       tslib: 2.8.1
@@ -1636,8 +1655,6 @@ snapshots:
 
   gensync@1.0.0-beta.2: {}
 
-  glightbox@3.3.1: {}
-
   html-entities@2.3.3: {}
 
   htmlparser2@12.0.0:
@@ -1779,6 +1796,8 @@ snapshots:
       entities: 6.0.1
 
   path-key@3.1.1: {}
+
+  photoswipe@5.4.4: {}
 
   picocolors@1.1.1: {}
 

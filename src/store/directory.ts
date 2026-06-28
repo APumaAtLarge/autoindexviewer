@@ -1,6 +1,6 @@
 
 // src/store/directory.ts
-import { createSignal } from "solid-js";
+import { createSignal ,createMemo} from "solid-js";
 import { type FileNode } from "../utils/parser";
 import { fetchDirectory } from "../api/directory";
 
@@ -21,7 +21,10 @@ export const [currentError, setCurrentError] = createSignal<string | null>(null)
 export const [parentItems, setParentItems] = createSignal<FileNode[]>([]);
 export const [parentLoading, setParentLoading] = createSignal<boolean>(false);
 export const [parentError, setParentError] = createSignal<string | null>(null);
-export const [parentFetched, setParentFetched] = createSignal<boolean>(false);
+// export const [parentFetched, setParentFetched] = createSignal<boolean>(false);
+export const parentFetched = createMemo(
+() => parentItems().length > 0 || parentError() !== null
+);
 
 const fetchItems = async (
   targetUrl: string,
@@ -47,6 +50,6 @@ export const fetchCurrent = (url: string) =>
 export const fetchParent = () => {
   const p = parentUrl();
   if (!p) return;
-  setParentFetched(true);
+  // setParentFetched(true);
   fetchItems(p, setParentLoading, setParentError, setParentItems);
 };

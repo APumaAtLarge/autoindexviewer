@@ -1,4 +1,3 @@
-
 // src/Sidebar.tsx
 import { onMount, Show } from "solid-js";
 import { type FileNode } from "./utils/parser";
@@ -16,9 +15,17 @@ import { PlaylistView } from "./components/sidebar/PlaylistView";
 // 引入统一的状态库
 import { activeTab, setActiveTab, sortMode, isPinned } from "./store/sidebarUI";
 import {
-  currentUrl, setCurrentUrl, fetchCurrent, fetchParent,
-  currentItems, currentLoading, currentError,
-  parentItems, parentLoading, parentError, setParentItems, setParentFetched
+  currentUrl,
+  setCurrentUrl,
+  fetchCurrent,
+  fetchParent,
+  currentItems,
+  currentLoading,
+  currentError,
+  parentItems,
+  parentLoading,
+  parentError,
+  setParentItems,
 } from "./store/directory";
 
 interface SidebarProps {
@@ -37,18 +44,18 @@ export const Sidebar = (props: SidebarProps) => {
     if (props.isMobile()) props.setIsOpen(false);
 
     if (item.isDirectory) {
-      window.history.pushState(null, "", item.url);
+      // window.history.pushState(null, "", item.url);
       navigateDir(item.url);
       setCurrentUrl(item.url);
-      setParentFetched(false);
-      setParentItems([]);
+
       fetchCurrent(item.url);
 
       // 根据缓存的 Pin 状态决定是否跳转 Tab
       if (isPinned()) {
-        if (activeTab() === "parent") fetchParent();
+        // if (activeTab() === "parent") fetchParent();
       } else {
         setActiveTab("current");
+        setParentItems([]);
       }
     } else if (isVideoFile(item.url)) {
       setVideoUrl(item.url);
