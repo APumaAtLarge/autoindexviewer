@@ -3,26 +3,23 @@ import { onMount, Show } from "solid-js";
 import { type FileNode } from "./utils/parser";
 import { videoUrl, setVideoUrl } from "./store/urlParams";
 import { navigateDir } from "./store/browseDir";
-import { sortItems } from "./utils/sort";
 import "./Sidebar.scss";
 
-// 引入拆分的子组件
 import { SidebarTabBar } from "./components/sidebar/SidebarTabBar";
 import { SidebarSortBar } from "./components/sidebar/SidebarSortBar";
 import { DirectoryList } from "./components/sidebar/DirectoryList";
 import { PlaylistView } from "./components/sidebar/PlaylistView";
 
-// 引入统一的状态库
-import { activeTab, setActiveTab, sortMode, isPinned } from "./store/sidebarUI";
+import { activeTab, setActiveTab, isPinned } from "./store/sidebarUI";
 import {
   currentUrl,
   setCurrentUrl,
   fetchCurrent,
   fetchParent,
-  currentItems,
+  sortedCurrentItems,
+  sortedParentItems,
   currentLoading,
   currentError,
-  parentItems,
   parentLoading,
   parentError,
   setParentItems,
@@ -44,13 +41,10 @@ export const Sidebar = (props: SidebarProps) => {
     if (props.isMobile()) props.setIsOpen(false);
 
     if (item.isDirectory) {
-      // window.history.pushState(null, "", item.url);
       navigateDir(item.url);
       setCurrentUrl(item.url);
-
       fetchCurrent(item.url);
 
-      // 根据缓存的 Pin 状态决定是否跳转 Tab
       if (isPinned()) {
         // if (activeTab() === "parent") fetchParent();
       } else {
@@ -65,23 +59,18 @@ export const Sidebar = (props: SidebarProps) => {
     }
   };
 
-  const sortedCurrent = () => sortItems(currentItems(), sortMode());
-  const sortedParent = () => sortItems(parentItems(), sortMode());
-
   return (
     <>
       <div classList={{ Sidebar: true, open: props.isOpen() }}>
-        {/* 0 Props, 干净利落 */}
         <SidebarTabBar />
 
         <Show when={activeTab() !== "playlist"}>
-          {/* 0 Props, 干净利落 */}
           <SidebarSortBar />
         </Show>
 
         <Show when={activeTab() === "current"}>
           <DirectoryList
-            items={sortedCurrent()}
+            items={sortedCurrentItems()}
             loading={currentLoading()}
             error={currentError()}
             currentUrl={currentUrl()}
@@ -91,7 +80,7 @@ export const Sidebar = (props: SidebarProps) => {
 
         <Show when={activeTab() === "parent"}>
           <DirectoryList
-            items={sortedParent()}
+            items={sortedParentItems()}
             loading={parentLoading()}
             error={parentError()}
             currentUrl={currentUrl()}

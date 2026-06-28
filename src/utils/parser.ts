@@ -105,3 +105,82 @@ export async function parseAndFilter(
   const raw = parseNginxHtml(htmlText, dirUri);
   return applyInterceptors(raw, dirUri);
 }
+
+
+
+export interface NginxJsonItem {
+name: string;
+type: "file" | "directory";
+mtime?: string;
+size?: number;
+}
+
+/**
+* 解析 autoindex JSON API
+*
+* API:
+*   /api/Movies/
+*
+* 实际文件:
+*   /Movies/
+*/
+export function parseNginxJson(
+jsonText: string,
+apiUrl: string = window.location.href
+): ParseResult {
+const data = JSON.parse(jsonText) as NginxJsonItem[];
+
+// /api/... -> /...
+const baseUrl = apiUrl.replace(/\/api(?=\/|$)/, "");
+
+// 当前目录标题
+const pathname = new URL(baseUrl).pathname;
+const title =
+  decodeURIComponent(pathname.replace(/\/$/, "").split("/").pop() || "/");
+
+const items: FileNode[] = data.map((item) => {
+  const isDirectory = item.type === "directory";
+
+  let url: string;
+
+  if (isDirectory) {
+    // 目录继续走 API
+    url = new URL(
+      `api/${encodeURIComponent(item.name)}/`,
+      baseUrl.endsWith("/") ? baseUrl : baseUrl + "/"
+    ).href;
+  } else {
+    // 文件走真实路径
+    url = new URL(
+      encodeURIComponent(item.name),
+      baseUrl.endsWith("/") ? baseUrl : baseUrl + "/"
+    ).href;
+  }
+
+  let cover: string | undefined;
+
+  if (isDirectory) {
+    cover = new URL("cover.jpg", url.replace(/\/api\//, "/")).href;
+  } else if (/\.(mp4|mkv|avi|m3u8)$/i.test(item.name)) {
+    cover = url.replace(/\.[^/.]+$/, ".jpg");
+  }
+
+  return {
+    name: item.name,
+    url,
+    isDirectory,
+    ...(item.mtime
+      ? {
+          metadata: {
+            date: item.mtime,
+            size:
+              item.size != null ? String(item.size) : "",
+          },
+        }
+      : {}),
+    ...(cover ? { cover } : {}),
+  };
+});
+
+return { title, items };
+}

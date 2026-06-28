@@ -3,7 +3,11 @@ import { createSignal, onMount, onCleanup, Show, type JSX } from "solid-js";
 import { isHomeOpen, openHome, closeHome } from "./store/homeView";
 import { Home } from "./Home";
 import "./Layout.scss";
-
+import { navigate } from "./store/router";
+const parentUrl = (() => {
+const p = window.location.pathname.replace(/\/$/, "");
+return p.includes("/") ? p.slice(0, p.lastIndexOf("/")) + "/" : "/";
+})();
 interface LayoutProps {
   sidebar: (
     isOpen: () => boolean,
@@ -32,15 +36,19 @@ export const Layout = (props: LayoutProps) => {
     <div class="app-layout" classList={{ "home-active": isHomeOpen() }}>
       <header class="app-header">
         <Show when={!isHomeOpen()}>
-          <button class="sidebar-toggle-btn" onClick={() => setIsOpen(!isOpen())}>
+          <button
+            class="sidebar-toggle-btn"
+            onClick={() => setIsOpen(!isOpen())}
+          >
             {isOpen() ? "✕ 关闭" : "☰ 目录"}
           </button>
           <a
-            href={(() => {
-              const p = window.location.pathname.replace(/\/$/, "");
-              return p.includes("/") ? p.slice(0, p.lastIndexOf("/")) + "/" : "/";
-            })()}
+            href={parentUrl}
             class="header-back-btn"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(parentUrl);
+            }}
             title="返回上一级"
           >
             ← 上级
@@ -65,7 +73,9 @@ export const Layout = (props: LayoutProps) => {
 
         <main
           id="app"
-          classList={{ "sidebar-shifted": isOpen() && !isMobile() && !isHomeOpen() }}
+          classList={{
+            "sidebar-shifted": isOpen() && !isMobile() && !isHomeOpen(),
+          }}
         >
           <Show when={!isHomeOpen()} fallback={<Home />}>
             {props.children}

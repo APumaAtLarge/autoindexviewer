@@ -1,23 +1,13 @@
 /* src/DirectoryGrid.scss */
-.file-grid {
-  display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(5, 1fr);
-  width: 100%; /* 显式加一个宽度撑满，防止被父级 flex 压缩 */
+/* .file-grid 已移除：列数/gap 现在由虚拟化层的 inline style 控制 */
 
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  @media (max-width: 768px) {
-    gap: 12px;
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  @media (max-width: 480px) {
-    gap: 10px;
-    grid-template-columns: repeat(2, 1fr);
-  }
+.dir-title {
+  font-size: 22px;
+  color: #333;
+  margin: 0 0 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #eaeaea;
+  flex-shrink: 0;
 }
 
 .file-card {
@@ -81,12 +71,7 @@
     color: #fff;
     padding: 20px 10px 8px;
     box-sizing: border-box;
-    /* ✅ 修复这里：把原来的 100-percent 改回 100% */
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(0, 0, 0, 0.65) 100%
-    );
+    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.65) 100%);
     z-index: 1;
   }
 
@@ -109,38 +94,23 @@
   }
 }
 
+/* 移动端卡片内部字体缩小 */
 @media (max-width: 768px) {
-  .file-grid {
-    gap: 10px;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  }
-
   .file-card {
     border-radius: 8px;
 
-    .icon {
-      font-size: 28px;
-    }
-
-    .name {
-      font-size: 12px;
-      padding: 16px 8px 6px;
-    }
-
-    .file-meta {
-      font-size: 10px;
-      padding: 0 8px 5px;
-    }
+    .icon { font-size: 28px; }
+    .name { font-size: 12px; padding: 16px 8px 6px; }
+    .file-meta { font-size: 10px; padding: 0 8px 5px; }
   }
 }
 
-
-/* 去掉 :global，直接写类名，因为当前文件本身就是全局作用域 */
+/* GLightbox 容器样式保持不变 */
 .glightbox-container {
   .grotate-btn {
     position: absolute;
     top: 15px;
-    right: 70px; /* 紧贴在原生关闭按钮左侧 */
+    right: 70px;
     background: rgba(0, 0, 0, 0.5);
     color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.25);
@@ -149,7 +119,7 @@
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    z-index: 999999; /* 确保在遮罩层最上方 */
+    z-index: 999999;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
@@ -160,21 +130,15 @@
       border-color: rgba(255, 255, 255, 0.6);
       transform: scale(1.05);
     }
-
-    &:active {
-      transform: scale(0.95);
-    }
+    &:active { transform: scale(0.95); }
   }
 }
 
-/* 移动端适配 */
 @media (max-width: 768px) {
-  .glightbox-container {
-    .grotate-btn {
-      top: 12px;
-      right: 60px;
-      padding: 5px 10px;
-      font-size: 11px;
-    }
+  .glightbox-container .grotate-btn {
+    top: 12px;
+    right: 60px;
+    padding: 5px 10px;
+    font-size: 11px;
   }
 }
